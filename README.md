@@ -70,7 +70,8 @@ claude --file ../fhe-assistant/docs/core-patterns.md \
 # Security review setup
 claude --file ../fhe-assistant/docs/security-checklist.md \
       --file ../fhe-assistant/docs/core-patterns.md \
-      "review this FHE contract: [paste your code]"
+      --file src/MyContract.sol \
+      "review this FHE contract against the security checklist"
 
 # Load entire directories (all files at once)
 claude --file ../fhe-assistant/docs/ "explain all FHE patterns and security considerations"
