@@ -1,147 +1,179 @@
 # FHE Assistant 🔐
 
-A comprehensive development assistant for Fully Homomorphic Encryption (FHE) smart contracts on Fhenix. This repository provides patterns, examples, and best practices to help developers build secure and efficient FHE applications.
+**AI Training Materials for Fully Homomorphic Encryption (FHE) Smart Contract Development**
 
-## 🚀 Quick Start
+This repository contains curated documentation and examples designed to train AI assistants (Claude, ChatGPT, Gemini, etc.) on FHE development patterns. Feed these materials into your AI assistant to get expert-level FHE guidance.
 
-### For Claude Code Users
+## 🎯 How to Use This Repository
 
-This repository is optimized for use with Claude Code. Simply reference this repository in your conversations:
+### Quick Setup for Any AI Assistant
 
-```bash
-# Clone the repository
-git clone https://github.com/fhenixprotocol/fhe-assistant.git
-cd fhe-assistant
-
-# Start Claude Code
-claude-code
+**Step 1: Choose Your Core Files (Essential)**
+```
+ALWAYS INCLUDE:
+📋 docs/core-patterns.md     (15KB) - Mental models & fundamental patterns  
+🛡️ docs/security-checklist.md (12KB) - Security review checklist
 ```
 
-**Usage Examples:**
+**Step 2: Add Based on Your Task**
+```
+FOR CODING HELP:
+📝 contracts/calculator.sol   (18KB) - Basic FHE operations with extensive comments
+🪙 contracts/fherc20.sol     (25KB) - Encrypted token patterns
+🏛️ contracts/auction.sol     (22KB) - Advanced sealed bid auction
 
-- "Help me build an encrypted calculator using the FHE patterns"
-- "Review my FHE contract against the security checklist"
-- "Show me how to set up FHE testing with Foundry"
-- "Explain the encrypted auction pattern"
+FOR SETUP/TESTING:
+⚙️ docs/setup-guide.md       (8KB)  - Foundry configuration
+🧪 docs/testing-guide.md     (14KB) - CoFheTest patterns
+🔧 contracts/test-example.sol (20KB) - Complete test demonstrations
 
-### For Other AI Platforms
+FOR CONTEXT/BACKGROUND:
+📚 docs/fhe-context.md       (10KB) - Ecosystem overview
+⚡ docs/foundry-basics.md    (6KB)  - Essential commands
+```
 
-Copy and paste the relevant documentation files as context:
+### Token Optimization Strategies
 
-1. **Core Concepts**: Use `docs/core-patterns.md` for fundamental FHE understanding
-2. **Security Review**: Use `docs/security-checklist.md` for code reviews
-3. **Setup Help**: Use `docs/setup-guide.md` for project configuration
-4. **Examples**: Reference contract files in `contracts/` for implementation patterns
+**Minimal Setup (≈27KB):**
+- `docs/core-patterns.md` + `docs/security-checklist.md`
+- Good for: Understanding FHE concepts, code review, security questions
 
-## 📋 Mental Model
+**Standard Setup (≈45KB):**
+- Core files + `contracts/calculator.sol` 
+- Good for: Building basic FHE contracts, learning patterns
+
+**Complete Setup (≈130KB):**
+- All files
+- Good for: Complex projects, advanced patterns, comprehensive understanding
+
+### Platform-Specific Instructions
+
+#### Claude Code
+```bash
+git clone https://github.com/fhenixprotocol/fhe-assistant.git
+cd fhe-assistant
+claude-code
+```
+Then say: *"Use this repository to help me with FHE smart contract development"*
+
+#### ChatGPT/Claude/Gemini (Copy-Paste)
+1. Copy contents of `docs/core-patterns.md`
+2. Paste and say: *"This is FHE reference material. Help me with [your task]"*
+3. Add more files as needed for your specific task
+
+#### Advanced: Custom System Prompt
+```
+You are an expert FHE (Fully Homomorphic Encryption) smart contract developer. 
+Key principles:
+- "Without FHE.allow() = passing a locked box without the key!"
+- FHE types are handles, not actual encrypted data
+- Use FHE.select() instead of if statements with ebool
+- Multi-transaction decryption is required
+- Always use FHE.allowThis() for contract storage
+
+Refer to the provided documentation for specific patterns and examples.
+```
+
+## 🔥 Example Prompts
+
+### For Code Generation
+```
+"I need to build an encrypted voting system. Show me the patterns for:
+- Storing encrypted votes 
+- Preventing double voting
+- Tallying votes privately"
+```
+
+### For Code Review  
+```
+"Review this FHE contract against the security checklist:
+[paste your contract code]"
+```
+
+### For Learning
+```
+"Explain how FHE.select() works and why I can't use if statements with ebool"
+```
+
+### For Setup Help
+```
+"Help me configure Foundry for FHE development with proper remappings"
+```
+
+## 📊 File Priority Matrix
+
+| Priority | Files | Use Case | Token Cost |
+|----------|-------|----------|------------|
+| 🔴 **Critical** | `core-patterns.md` + `security-checklist.md` | Understanding FHE, Code review | ~27KB |
+| 🟡 **High** | + `calculator.sol` | Building basic contracts | ~45KB |
+| 🟢 **Standard** | + `fherc20.sol` OR `auction.sol` | Advanced patterns | ~70KB |
+| 🔵 **Complete** | All files | Complex projects, learning | ~130KB |
+
+## 💡 Pro Tips for AI Training
+
+### Effective Context Loading
+1. **Start Small**: Begin with `core-patterns.md` only
+2. **Add Incrementally**: Include specific files as conversation progresses  
+3. **Reference by Name**: Say "use the calculator pattern from calculator.sol"
+4. **Refresh Context**: Re-paste core files if AI forgets patterns
+
+### Common AI Prompts
+```bash
+# Initial training
+"This is FHE reference material. I'm building encrypted smart contracts."
+
+# Pattern requests  
+"Show me the FHE token transfer pattern"
+"How do I handle encrypted comparisons?"
+"What's the proper access control pattern?"
+
+# Security review
+"Check this contract against the FHE security checklist"
+
+# Debugging
+"Why isn't my FHE.allow() working?"
+"How do I fix 'access denied' errors?"
+```
+
+### Token Management
+- **Short Sessions**: Use minimal setup for quick questions
+- **Long Sessions**: Front-load all relevant files 
+- **Refresh Strategy**: Re-paste core patterns if AI responses degrade
+- **File Chunking**: For very long files, paste in sections with clear headers
+
+## 🎯 Core Mental Model
 
 > **"Without FHE.allow() = passing a locked box without the key!"**
 
-This is the core mental model for FHE development. FHE types (euint8, euint32, ebool) are handles pointing to encrypted data. Operations create computation graphs, and results must be explicitly made accessible using `FHE.allow()` or `FHE.allowThis()`.
+The AI assistant must understand this fundamental concept before any FHE development. FHE types are handles, not actual encrypted data.
 
-## 📁 Repository Structure
+## 📁 What's Inside
 
 ```
-fhe-assistant/
-├── docs/
-│   ├── core-patterns.md      # Fundamental FHE concepts and patterns
-│   ├── security-checklist.md # Code review checklist
-│   ├── setup-guide.md        # Foundry/Hardhat configuration
-│   ├── testing-guide.md      # CoFheTest patterns
-│   ├── fhe-context.md        # Fhenix ecosystem overview
-│   └── foundry-basics.md     # Essential Foundry commands
-└── contracts/
-    ├── calculator.sol        # Basic FHE operations
-    ├── fherc20.sol          # Encrypted token patterns
-    ├── auction.sol          # Sealed bid auction
-    └── test-example.sol     # CoFheTest demonstration
+📋 docs/core-patterns.md      → FHE mental models & patterns (ESSENTIAL)
+🛡️ docs/security-checklist.md → Pre-flight security review (ESSENTIAL)  
+⚙️ docs/setup-guide.md        → Foundry/Hardhat configuration
+🧪 docs/testing-guide.md      → CoFheTest patterns & best practices
+📚 docs/fhe-context.md        → Ecosystem overview & background
+⚡ docs/foundry-basics.md     → Essential development commands
+
+📝 contracts/calculator.sol   → Basic FHE operations (START HERE)
+🪙 contracts/fherc20.sol      → Encrypted token implementation  
+🏛️ contracts/auction.sol      → Sealed bid auction (ADVANCED)
+🔧 contracts/test-example.sol → Comprehensive test examples
 ```
 
-## 🎯 Common Use Cases
+## 🤝 Community Resources
 
-### Building Your First FHE Contract
-
-1. Start with `docs/setup-guide.md` for project setup
-2. Review `docs/core-patterns.md` for mental models
-3. Copy patterns from `contracts/calculator.sol`
-4. Test using patterns from `docs/testing-guide.md`
-
-### Code Review
-
-Use `docs/security-checklist.md` as a pre-flight checklist:
-- ✅ All FHE operations have proper access control
-- ✅ No ebool used in if statements
-- ✅ Multi-transaction decryption patterns
-- ✅ Proper error handling
-
-### Advanced Patterns
-
-- **Encrypted Tokens**: See `contracts/fherc20.sol`
-- **Auctions**: See `contracts/auction.sol`
-- **Testing**: See `contracts/test-example.sol`
-
-## 🛡️ Security First
-
-FHE development requires different security considerations:
-
-- **Access Control**: FHE operations are NOT view functions
-- **Decryption**: Always requires multiple transactions
-- **Control Flow**: Use `FHE.select()` instead of if statements
-- **Permissions**: Cross-contract calls need explicit permissions
-
-## 🔧 Prerequisites
-
-- [Foundry](https://book.getfoundry.sh/getting-started/installation)
-- Basic Solidity knowledge
-- Understanding of encryption concepts
-
-## 📚 Learning Path
-
-1. **Start Here**: `docs/fhe-context.md` - Understand the Fhenix ecosystem
-2. **Core Concepts**: `docs/core-patterns.md` - Master FHE mental models
-3. **Hands-On**: `contracts/calculator.sol` - Build your first contract
-4. **Testing**: `docs/testing-guide.md` - Learn CoFheTest patterns
-5. **Advanced**: `contracts/auction.sol` - Complex FHE applications
-
-## 🤝 Community & Support
-
-- **Discord**: [Fhenix Community](https://discord.gg/FuVgxrvJMY)
-- **Documentation**: [docs.fhenix.zone](https://docs.fhenix.zone)
-- **GitHub**: [Fhenix Protocol](https://github.com/FhenixProtocol)
-
-## 📝 Contributing
-
-We welcome contributions! Please use our issue templates:
-
-- **Assistant Feedback**: Report issues with AI assistant responses
-- **Pattern Improvements**: Suggest better FHE patterns
-
-### Guard Rails
-
-This assistant only provides information contained in these files. For topics not covered here, we'll refer you to the official documentation at [docs.fhenix.zone](https://docs.fhenix.zone).
-
-## 🏃‍♂️ Quick Commands
-
-```bash
-# Setup new FHE project
-forge init my-fhe-project
-cd my-fhe-project
-forge install https://github.com/FhenixProtocol/fhenix-contracts
-
-# Build and test
-forge build
-forge test
-
-# Deploy to CoFHE (testnet)
-forge script script/Deploy.s.sol --rpc-url https://api.cofhe.fhenix.zone --broadcast
-```
+- **Discord**: [Fhenix Community](https://discord.gg/FuVgxrvJMY) - Real-time FHE help
+- **Documentation**: [docs.fhenix.zone](https://docs.fhenix.zone) - Official reference
+- **GitHub Issues**: Report AI training improvements or pattern issues
 
 ## 📄 License
 
-MIT License - see LICENSE file for details.
+MIT License - Use freely for AI training and development.
 
 ---
 
-**Remember**: Without `FHE.allow()`, you're passing a locked box without the key! 🔐
-
-*This assistant is community-driven. Found an issue or have a suggestion? [Open an issue](https://github.com/fhenixprotocol/fhe-assistant/issues) to help improve the experience for everyone.*
+**🚀 Ready to start?** Copy `docs/core-patterns.md` into your AI assistant and say:
+*"This is FHE reference material. Help me build encrypted smart contracts."*
