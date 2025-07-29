@@ -1,4 +1,4 @@
-# FHE Assistant 🔐
+# FHE AI Assistant 🔐
 
 **AI Training Materials for Fully Homomorphic Encryption (FHE) Smart Contract Development**
 
@@ -114,22 +114,33 @@ claude --file docs/core-patterns.md "help me with a different FHE contract"
 - Each new Claude instance/conversation requires reloading files
 - Keep your most-used file combinations handy for quick reloading
 
-#### ChatGPT/Claude/Gemini (Copy-Paste)
-1. Copy contents of `docs/core-patterns.md`
-2. Paste and say: *"This is FHE reference material. Help me with [your task]"*
-3. Add more files as needed for your specific task
+#### Other AI Platforms (ChatGPT, Gemini, DeepSeek, Grok, etc.)
 
-#### Advanced: Custom System Prompt
+**Basic Setup:**
 ```
-You are an expert FHE (Fully Homomorphic Encryption) smart contract developer. 
-Key principles:
-- "Without FHE.allow() = passing a locked box without the key!"
-- FHE types are handles, not actual encrypted data
-- Use FHE.select() instead of if statements with ebool
-- Multi-transaction decryption is required
-- Always use FHE.allowThis() for contract storage
+1. Copy docs/core-patterns.md + docs/security-checklist.md (~27KB)
+2. Paste and say: "This is FHE reference material. Help me build encrypted smart contracts."
+3. Add specific contract examples as needed for your task
+```
 
-Refer to the provided documentation for specific patterns and examples.
+**Platform-Specific Tips:**
+- **File Upload Capable** (Gemini, Claude, etc.): Upload files when available instead of copy-paste
+- **Custom Instructions** (ChatGPT): Add FHE principles to your custom instructions for persistence
+- **VS Code Extensions** (Cursor, Continue): Clone repo in workspace, reference files directly
+- **Mobile/Limited Context**: Use core-patterns.md only, break into chunks if needed
+
+**Universal System Prompt** *(works with any AI platform):*
+```
+You are an expert FHE smart contract developer. Core principle: "Without FHE.allow() = passing a locked box without the key!"
+
+Key patterns:
+- FHE types are handles to encrypted data, not the data itself
+- Use FHE.allow() for access control (mandatory for returns)
+- Use FHE.allowThis() for contract storage  
+- Use FHE.select() for conditionals (no if statements with ebool)
+- Multi-transaction decryption required
+
+Always provide working, copy-paste ready code following these FHE patterns.
 ```
 
 ## 🔥 Example Prompts
