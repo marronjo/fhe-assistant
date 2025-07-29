@@ -50,11 +50,16 @@ FOR CONTEXT/BACKGROUND:
 
 #### Claude Code
 ```bash
+# Clone the reference materials (one-time setup)
 git clone https://github.com/fhenixprotocol/fhe-assistant.git
-cd fhe-assistant
+
+# In your actual FHE project directory
+cd your-fhe-project
 claude-code
 ```
-Then say: *"Use this repository to help me with FHE smart contract development"*
+Then reference the materials: *"Use the FHE patterns from `/path/to/fhe-assistant/docs/core-patterns.md` to help me build this contract"*
+
+**Pro tip**: Keep the `fhe-assistant` repo in a standard location like `~/dev/fhe-assistant` so you can always reference it from any project.
 
 #### ChatGPT/Claude/Gemini (Copy-Paste)
 1. Copy contents of `docs/core-patterns.md`
