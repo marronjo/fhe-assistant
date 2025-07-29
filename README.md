@@ -55,11 +55,63 @@ git clone https://github.com/fhenixprotocol/fhe-assistant.git
 
 # In your actual FHE project directory
 cd your-fhe-project
-claude-code
 ```
-Then reference the materials: *"Use the FHE patterns from `/path/to/fhe-assistant/docs/core-patterns.md` to help me build this contract"*
 
-**Pro tip**: Keep the `fhe-assistant` repo in a standard location like `~/dev/fhe-assistant` so you can always reference it from any project.
+**⚡ Inject files ONCE at conversation start:**
+```bash
+# Essential FHE knowledge (minimal context)
+claude --file ../fhe-assistant/docs/core-patterns.md "help me understand FHE access control"
+
+# Standard setup for building contracts
+claude --file ../fhe-assistant/docs/core-patterns.md \
+      --file ../fhe-assistant/contracts/calculator.sol \
+      "help me build an encrypted calculator"
+
+# Security review setup
+claude --file ../fhe-assistant/docs/security-checklist.md \
+      --file ../fhe-assistant/docs/core-patterns.md \
+      "review this FHE contract: [paste your code]"
+
+# Load entire directories (all files at once)
+claude --file ../fhe-assistant/docs/ "explain all FHE patterns and security considerations"
+
+# Complete context for complex projects  
+claude --file ../fhe-assistant/docs/ \
+      --file ../fhe-assistant/contracts/ \
+      "build me an encrypted voting system"
+
+# Mix specific files and directories
+claude --file ../fhe-assistant/docs/core-patterns.md \
+      --file ../fhe-assistant/contracts/ \
+      "explain the FHERC20 token pattern"
+```
+
+**🔑 Key Point: Load files ONCE per conversation** - they stay in context for the entire session!
+
+After initial setup, just chat normally:
+```bash
+# First message (loads context)
+claude --file docs/core-patterns.md "explain FHE access control"
+
+# All subsequent messages in SAME conversation (files already loaded)
+"now show me how to implement encrypted transfers"
+"review this contract I just wrote"  
+"what's wrong with this FHE.select() usage?"
+```
+
+**🔄 New conversation = reload files:**
+```bash
+# Close claude, open new instance
+# Files are gone - need to reload for new conversation
+
+claude --file docs/core-patterns.md "help me with a different FHE contract"
+```
+
+**Pro tips:**
+- Keep `fhe-assistant` in a standard location like `~/dev/fhe-assistant`
+- **Context persists within single conversation only**
+- Each new Claude instance/conversation requires reloading files
+- Keep your most-used file combinations handy for quick reloading
 
 #### ChatGPT/Claude/Gemini (Copy-Paste)
 1. Copy contents of `docs/core-patterns.md`
