@@ -11,38 +11,38 @@ This repository contains curated documentation and examples designed to train AI
 **Step 1: Choose Your Core Files (Essential)**
 ```
 ALWAYS INCLUDE:
-📋 docs/core-patterns.md     (15KB) - Mental models & fundamental patterns  
-🛡️ docs/security-checklist.md (12KB) - Security review checklist
+📋 docs/core-patterns.md     (10KB) - Mental models & fundamental patterns  
+🛡️ docs/security-checklist.md (9KB) - Security review checklist
 ```
 
 **Step 2: Add Based on Your Task**
 ```
 FOR CODING HELP:
-📝 contracts/calculator.sol   (18KB) - Basic FHE operations with extensive comments
-🪙 contracts/fherc20.sol     (25KB) - Encrypted token patterns
-🏛️ contracts/auction.sol     (22KB) - Advanced sealed bid auction
+📝 contracts/calculator.sol   (13KB) - Basic FHE operations with extensive comments
+🪙 contracts/fherc20.sol     (20KB) - Encrypted token patterns
+🏛️ contracts/auction.sol     (21KB) - Advanced sealed bid auction
 
 FOR SETUP/TESTING:
 ⚙️ docs/setup-guide.md       (8KB)  - Foundry configuration
-🧪 docs/testing-guide.md     (14KB) - CoFheTest patterns
-🔧 contracts/test-example.sol (20KB) - Complete test demonstrations
+🧪 docs/testing-guide.md     (12KB) - CoFheTest patterns
+🔧 contracts/test-example.sol (22KB) - Complete test demonstrations
 
 FOR CONTEXT/BACKGROUND:
 📚 docs/fhe-context.md       (10KB) - Ecosystem overview
-⚡ docs/foundry-basics.md    (6KB)  - Essential commands
+⚡ docs/foundry-basics.md    (8KB)  - Essential commands
 ```
 
 ### Token Optimization Strategies
 
-**Minimal Setup (≈27KB):**
+**Minimal Setup (≈19KB):**
 - `docs/core-patterns.md` + `docs/security-checklist.md`
 - Good for: Understanding FHE concepts, code review, security questions
 
-**Standard Setup (≈45KB):**
+**Standard Setup (≈32KB):**
 - Core files + `contracts/calculator.sol` 
 - Good for: Building basic FHE contracts, learning patterns
 
-**Complete Setup (≈130KB):**
+**Complete Setup (≈114KB):**
 - All files
 - Good for: Complex projects, advanced patterns, comprehensive understanding
 
@@ -118,7 +118,7 @@ claude --file docs/core-patterns.md "help me with a different FHE contract"
 
 **Basic Setup:**
 ```
-1. Copy docs/core-patterns.md + docs/security-checklist.md (~27KB)
+1. Copy docs/core-patterns.md + docs/security-checklist.md (~19KB)
 2. Paste and say: "This is FHE reference material. Help me build encrypted smart contracts."
 3. Add specific contract examples as needed for your task
 ```
@@ -155,8 +155,7 @@ Always provide working, copy-paste ready code following these FHE patterns.
 
 ### For Code Review  
 ```
-"Review this FHE contract against the security checklist:
-[paste your contract code]"
+"Review this FHE contract against the security checklist: [path/to/file or pasted code]"
 ```
 
 ### For Learning
@@ -173,10 +172,10 @@ Always provide working, copy-paste ready code following these FHE patterns.
 
 | Priority | Files | Use Case | Token Cost |
 |----------|-------|----------|------------|
-| 🔴 **Critical** | `core-patterns.md` + `security-checklist.md` | Understanding FHE, Code review | ~27KB |
-| 🟡 **High** | + `calculator.sol` | Building basic contracts | ~45KB |
-| 🟢 **Standard** | + `fherc20.sol` OR `auction.sol` | Advanced patterns | ~70KB |
-| 🔵 **Complete** | All files | Complex projects, learning | ~130KB |
+| 🔴 **Critical** | `core-patterns.md` + `security-checklist.md` | Understanding FHE, Code review | ~19KB |
+| 🟡 **High** | + `calculator.sol` | Building basic contracts | ~32KB |
+| 🟢 **Standard** | + `fherc20.sol` OR `auction.sol` | Advanced patterns | ~53KB |
+| 🔵 **Complete** | All files | Complex projects, learning | ~114KB |
 
 ## 💡 Pro Tips for AI Training
 
