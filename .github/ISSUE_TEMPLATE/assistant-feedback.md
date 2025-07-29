@@ -1,7 +1,7 @@
 ---
 name: Assistant Feedback
 about: Report issues with AI assistant responses or request improvements
-title: '[ASSISTANT] '
+title: '[ASSISTANT]'
 labels: 'assistant-feedback'
 assignees: ''
 ---
@@ -11,6 +11,9 @@ assignees: ''
 **Which AI platform were you using?**
 - [ ] Claude Code
 - [ ] ChatGPT
+- [ ] Gemini
+- [ ] Deepseek
+- [ ] Grok
 - [ ] Other (please specify): 
 
 **What were you trying to accomplish?**
