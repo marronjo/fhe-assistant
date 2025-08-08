@@ -200,7 +200,7 @@ contract SealedBidAuction {
      * 
      * Pattern: Encrypted bid submission with deposit validation
      */
-    function bid(InEuint calldata encryptedAmount) external payable onlyDuringPhase(AuctionPhase.Bidding) {
+    function bid(InEuint32 calldata encryptedAmount) external payable onlyDuringPhase(AuctionPhase.Bidding) {
         require(block.timestamp < auctionInfo.endTime, "Bidding period ended");
         require(msg.value == auctionInfo.bidDeposit, "Incorrect deposit amount");
         require(!hasBid[msg.sender], "Already submitted bid");
@@ -236,7 +236,7 @@ contract SealedBidAuction {
      * 
      * Pattern: Bid modification with encrypted arithmetic
      */
-    function increaseBid(InEuint calldata encryptedAdditionalAmount) external payable onlyDuringPhase(AuctionPhase.Bidding) {
+    function increaseBid(InEuint32 calldata encryptedAdditionalAmount) external payable onlyDuringPhase(AuctionPhase.Bidding) {
         require(block.timestamp < auctionInfo.endTime, "Bidding period ended");
         require(hasBid[msg.sender], "No existing bid");
         require(msg.value > 0, "Must send additional deposit");
@@ -495,7 +495,7 @@ contract SealedBidAuction {
      * 
      * Pattern: Encrypted bid comparison utility
      */
-    function compareBidToAmount(InEuint calldata referenceAmount) external returns (ebool) {
+    function compareBidToAmount(InEuint32 calldata referenceAmount) external returns (ebool) {
         require(hasBid[msg.sender], "No bid submitted");
         
         euint32 bidAmount = bids[msg.sender].amount;

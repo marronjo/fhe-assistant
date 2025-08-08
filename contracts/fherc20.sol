@@ -165,7 +165,7 @@ contract FHERC20 {
      * Pattern: Zero-knowledge transfer validation
      * The transfer succeeds or fails without revealing the exact amounts
      */
-    function transfer(address to, InEuint calldata amount) external returns (bool) {
+    function transfer(address to, InEuint32 calldata amount) external returns (bool) {
         euint32 encryptedAmount = FHE.asEuint32(amount);
         return _transfer(msg.sender, to, encryptedAmount);
     }
@@ -175,7 +175,7 @@ contract FHERC20 {
      * @param to Recipient address
      * @param amount Encrypted amount to mint
      */
-    function _mint(address to, InEuint calldata amount) internal {
+    function _mint(address to, InEuint32 calldata amount) internal {
         euint32 encryptedAmount = FHE.asEuint32(amount);
         
         // Update recipient balance
@@ -204,7 +204,7 @@ contract FHERC20 {
      * @param amount Encrypted amount to mint
      * @return success True if minting succeeded
      */
-    function mint(address to, InEuint calldata amount) external returns (bool) {
+    function mint(address to, InEuint32 calldata amount) external returns (bool) {
         require(msg.sender == owner, "Only owner can mint");
         require(to != address(0), "Mint to zero address");
         require(FHE.decrypt(FHE.asEuint32(amount)) > 0, "Mint amount must be positive");
@@ -225,7 +225,7 @@ contract FHERC20 {
     function transferFrom(
         address from, 
         address to, 
-        InEuint calldata encryptedAmount
+        InEuint32 calldata encryptedAmount
     ) external returns (bool) {
         require(hasAllowance[from][msg.sender], "No allowance granted");
         
@@ -341,7 +341,7 @@ contract FHERC20 {
      *
      * Pattern: Encrypted allowance approval
      */
-    function approve(address spender, InEuint calldata encryptedAmount) external returns (bool) {
+    function approve(address spender, InEuint32 calldata encryptedAmount) external returns (bool) {
         require(spender != address(0), "Approve to zero address");
         
         euint32 encAmt = FHE.asEuint32(encryptedAmount);
@@ -389,7 +389,7 @@ contract FHERC20 {
      *
      * Pattern: Burning with encrypted balance validation
      */
-    function burn(InEuint calldata amount) external returns (bool) {
+    function burn(InEuint32 calldata amount) external returns (bool) {
         require(hasBalance[msg.sender], "No balance to burn");
         
         euint32 encryptedAmount = FHE.asEuint32(amount);
@@ -438,7 +438,7 @@ contract FHERC20 {
      *
      * Pattern: Encrypted comparison utility
      */
-    function compareAmounts(InEuint calldata amount1, InEuint calldata amount2) external returns (ebool) {
+    function compareAmounts(InEuint32 calldata amount1, InEuint32 calldata amount2) external returns (ebool) {
         // Convert encrypted inputs to internal handles
         euint32 enc1 = FHE.asEuint32(amount1);
         euint32 enc2 = FHE.asEuint32(amount2);
@@ -461,7 +461,7 @@ contract FHERC20 {
      *
      * Pattern: Encrypted mathematical operations
      */
-    function min(InEuint calldata amount1, InEuint calldata amount2) external returns (euint32) {
+    function min(InEuint32 calldata amount1, InEuint32 calldata amount2) external returns (euint32) {
         // Convert encrypted inputs to internal handles
         euint32 enc1 = FHE.asEuint32(amount1);
         euint32 enc2 = FHE.asEuint32(amount2);

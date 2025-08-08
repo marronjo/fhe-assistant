@@ -39,7 +39,7 @@ contract EncryptedCalculator {
      *
      * Pattern: Basic FHE arithmetic with access control
      */
-    function add(InEuint calldata a, InEuint calldata b) external returns (euint32) {
+    function add(InEuint32 calldata a, InEuint32 calldata b) external returns (euint32) {
         // Convert encrypted inputs to internal handles
         euint32 encA = FHE.asEuint32(a);
         euint32 encB = FHE.asEuint32(b);
@@ -62,7 +62,7 @@ contract EncryptedCalculator {
      *
      * Pattern: Subtraction with underflow handling
      */
-    function subtract(InEuint calldata a, InEuint calldata b) external returns (euint32) {
+    function subtract(InEuint32 calldata a, InEuint32 calldata b) external returns (euint32) {
         euint32 encA = FHE.asEuint32(a);
         euint32 encB = FHE.asEuint32(b);
         
@@ -83,7 +83,7 @@ contract EncryptedCalculator {
      *
      * Pattern: Multiplication with overflow considerations
      */
-    function multiply(InEuint calldata a, InEuint calldata b) external returns (euint32) {
+    function multiply(InEuint32 calldata a, InEuint32 calldata b) external returns (euint32) {
         euint32 encA = FHE.asEuint32(a);
         euint32 encB = FHE.asEuint32(b);
         
@@ -105,7 +105,7 @@ contract EncryptedCalculator {
      * Pattern: Conditional logic with FHE.select() for error handling
      * IMPORTANT: Both branches of FHE.select() always execute!
      */
-    function divide(InEuint calldata a, InEuint calldata b) external returns (euint32) {
+    function divide(InEuint32 calldata a, InEuint32 calldata b) external returns (euint32) {
         euint32 encA = FHE.asEuint32(a);
         euint32 encB = FHE.asEuint32(b);
         euint32 zero = FHE.asEuint32(0);
@@ -131,7 +131,7 @@ contract EncryptedCalculator {
      *
      * Pattern: Comparison and conditional selection
      */
-    function maximum(InEuint calldata a, InEuint calldata b) external returns (euint32) {
+    function maximum(InEuint32 calldata a, InEuint32 calldata b) external returns (euint32) {
         euint32 encA = FHE.asEuint32(a);
         euint32 encB = FHE.asEuint32(b);
         
@@ -156,7 +156,7 @@ contract EncryptedCalculator {
      *
      * Pattern: State storage with FHE.allowThis() for contract access
      */
-    function complexCalculation(InEuint calldata a, InEuint calldata b, InEuint calldata c) external returns (euint32) {
+    function complexCalculation(InEuint32 calldata a, InEuint32 calldata b, InEuint32 calldata c) external returns (euint32) {
         euint32 encA = FHE.asEuint32(a);
         euint32 encB = FHE.asEuint32(b);
         euint32 encC = FHE.asEuint32(c);
@@ -203,7 +203,7 @@ contract EncryptedCalculator {
      *
      * Pattern: Async decryption workflow
      */
-    function requestDecryption(InEuint calldata a) external returns (bytes32) {
+    function requestDecryption(InEuint32 calldata a) external returns (bytes32) {
         euint32 encA = FHE.asEuint32(a);
         euint32 doubled = FHE.mul(encA, FHE.asEuint32(2));
         
@@ -236,9 +236,9 @@ contract EncryptedCalculator {
      * Pattern: Complex conditional logic with multiple FHE.select() calls
      */
     function conditionalCalculation(
-        InEuint calldata x,
-        InEuint calldata y,
-        InEuint calldata threshold
+        InEuint32 calldata x,
+        InEuint32 calldata y,
+        InEuint32 calldata threshold
     ) external returns (euint32) {
         euint32 encX = FHE.asEuint32(x);
         euint32 encY = FHE.asEuint32(y);
@@ -271,7 +271,7 @@ contract EncryptedCalculator {
      *
      * Pattern: Iterative FHE operations
      */
-    function batchSum(InEuint[] calldata values) external returns (euint32) {
+    function batchSum(InEuint32[] calldata values) external returns (euint32) {
         require(values.length > 0, "Empty array");
         require(values.length <= 10, "Too many values"); // Gas limit protection
         
