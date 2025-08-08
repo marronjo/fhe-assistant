@@ -12,12 +12,12 @@ import "@fhenixprotocol/contracts/FHE.sol";
  *      - Multi-transaction decryption patterns
  *      - Error handling for division by zero
  *      - Conditional logic with FHE.select()
- * 
+ *
  * Mental Model: "Without FHE.allow() = passing a locked box without the key!"
- * 
+ *
  * Key Concepts Demonstrated:
  * - FHE types are handles (uint256) pointing to encrypted data
- * - Operations create computation graphs, not immediate results
+ * - Operations create computation graphs rather than immediate results
  * - Access control is mandatory for all encrypted values
  * - Multi-transaction flow required for decryption
  */
@@ -33,14 +33,14 @@ contract EncryptedCalculator {
     
     /**
      * @notice Encrypted addition operation
-     * @param a First operand (plaintext, will be encrypted)
-     * @param b Second operand (plaintext, will be encrypted)
+     * @param a First operand (encrypted input)
+     * @param b Second operand (encrypted input)
      * @return result Encrypted sum accessible to caller
-     * 
+     *
      * Pattern: Basic FHE arithmetic with access control
      */
-    function add(uint32 a, uint32 b) external returns (euint32) {
-        // Convert plaintext to encrypted values (trivial encryption)
+    function add(InEuint calldata a, InEuint calldata b) external returns (euint32) {
+        // Convert encrypted inputs to internal handles
         euint32 encA = FHE.asEuint32(a);
         euint32 encB = FHE.asEuint32(b);
         
@@ -56,13 +56,13 @@ contract EncryptedCalculator {
     
     /**
      * @notice Encrypted subtraction operation
-     * @param a Minuend (plaintext, will be encrypted)
-     * @param b Subtrahend (plaintext, will be encrypted)
+     * @param a Minuend (encrypted input)
+     * @param b Subtrahend (encrypted input)
      * @return result Encrypted difference accessible to caller
-     * 
+     *
      * Pattern: Subtraction with underflow handling
      */
-    function subtract(uint32 a, uint32 b) external returns (euint32) {
+    function subtract(InEuint calldata a, InEuint calldata b) external returns (euint32) {
         euint32 encA = FHE.asEuint32(a);
         euint32 encB = FHE.asEuint32(b);
         
@@ -77,13 +77,13 @@ contract EncryptedCalculator {
     
     /**
      * @notice Encrypted multiplication operation
-     * @param a First factor (plaintext, will be encrypted)
-     * @param b Second factor (plaintext, will be encrypted)
+     * @param a First factor (encrypted input)
+     * @param b Second factor (encrypted input)
      * @return result Encrypted product accessible to caller
-     * 
+     *
      * Pattern: Multiplication with overflow considerations
      */
-    function multiply(uint32 a, uint32 b) external returns (euint32) {
+    function multiply(InEuint calldata a, InEuint calldata b) external returns (euint32) {
         euint32 encA = FHE.asEuint32(a);
         euint32 encB = FHE.asEuint32(b);
         
@@ -98,14 +98,14 @@ contract EncryptedCalculator {
     
     /**
      * @notice Encrypted division operation with zero-check
-     * @param a Dividend (plaintext, will be encrypted)
-     * @param b Divisor (plaintext, will be encrypted)
+     * @param a Dividend (encrypted input)
+     * @param b Divisor (encrypted input)
      * @return result Encrypted quotient or original dividend if divisor is zero
-     * 
+     *
      * Pattern: Conditional logic with FHE.select() for error handling
      * IMPORTANT: Both branches of FHE.select() always execute!
      */
-    function divide(uint32 a, uint32 b) external returns (euint32) {
+    function divide(InEuint calldata a, InEuint calldata b) external returns (euint32) {
         euint32 encA = FHE.asEuint32(a);
         euint32 encB = FHE.asEuint32(b);
         euint32 zero = FHE.asEuint32(0);
@@ -113,17 +113,9 @@ contract EncryptedCalculator {
         // Check if divisor is zero (returns ebool, not bool!)
         ebool isZero = FHE.eq(encB, zero);
         
-        // CRITICAL PATTERN: Cannot use ebool in if statement!
-        // if (isZero) { ... } // This won't compile!
-        
-        // Instead, use FHE.select() for conditional logic
-        // If divisor is zero, return dividend unchanged; otherwise, divide
-        euint32 divisionResult = FHE.div(encA, encB); // This executes regardless
-        euint32 result = FHE.select(
-            isZero,
-            encA,              // Return dividend if divisor is zero
-            divisionResult     // Return quotient if divisor is not zero
-        );
+        // Use FHE.select to handle zero divisor
+        euint32 divisionResult = FHE.div(encA, encB);
+        euint32 result = FHE.select(isZero, encA, divisionResult);
         
         FHE.allow(result, msg.sender);
         
@@ -133,13 +125,13 @@ contract EncryptedCalculator {
     
     /**
      * @notice Find maximum of two encrypted values
-     * @param a First value (plaintext, will be encrypted)
-     * @param b Second value (plaintext, will be encrypted)
+     * @param a First value (encrypted input)
+     * @param b Second value (encrypted input)
      * @return result Encrypted maximum accessible to caller
-     * 
+     *
      * Pattern: Comparison and conditional selection
      */
-    function maximum(uint32 a, uint32 b) external returns (euint32) {
+    function maximum(InEuint calldata a, InEuint calldata b) external returns (euint32) {
         euint32 encA = FHE.asEuint32(a);
         euint32 encB = FHE.asEuint32(b);
         
@@ -157,14 +149,14 @@ contract EncryptedCalculator {
     
     /**
      * @notice Complex calculation with state storage
-     * @param a First operand
-     * @param b Second operand
-     * @param c Third operand
+     * @param a First operand (encrypted input)
+     * @param b Second operand (encrypted input)
+     * @param c Third operand (encrypted input)
      * @return result Encrypted result of (a + b) * c, stored for user
-     * 
+     *
      * Pattern: State storage with FHE.allowThis() for contract access
      */
-    function complexCalculation(uint32 a, uint32 b, uint32 c) external returns (euint32) {
+    function complexCalculation(InEuint calldata a, InEuint calldata b, InEuint calldata c) external returns (euint32) {
         euint32 encA = FHE.asEuint32(a);
         euint32 encB = FHE.asEuint32(b);
         euint32 encC = FHE.asEuint32(c);
@@ -190,7 +182,7 @@ contract EncryptedCalculator {
     /**
      * @notice Retrieve user's stored calculation result
      * @return result User's stored encrypted result
-     * 
+     *
      * Pattern: Retrieving stored encrypted data with access control
      */
     function getStoredResult() external returns (euint32) {
@@ -206,18 +198,12 @@ contract EncryptedCalculator {
     
     /**
      * @notice Multi-transaction decryption pattern demonstration
-     * @param a Value to process
+     * @param a Value to process (encrypted input)
      * @return resultId Identifier for tracking the decryption request
-     * 
+     *
      * Pattern: Async decryption workflow
-     * 
-     * Usage:
-     * 1. Call requestDecryption() -> get resultId
-     * 2. Wait for decryption network to process
-     * 3. Call FHE.decrypt() off-chain with resultId
-     * 4. Use decrypted value in subsequent transaction
      */
-    function requestDecryption(uint32 a) external returns (bytes32) {
+    function requestDecryption(InEuint calldata a) external returns (bytes32) {
         euint32 encA = FHE.asEuint32(a);
         euint32 doubled = FHE.mul(encA, FHE.asEuint32(2));
         
@@ -242,17 +228,17 @@ contract EncryptedCalculator {
     
     /**
      * @notice Conditional calculation based on comparison
-     * @param x First value
-     * @param y Second value
-     * @param threshold Comparison threshold
+     * @param x First value (encrypted input)
+     * @param y Second value (encrypted input)
+     * @param threshold Comparison threshold (encrypted input)
      * @return result Different calculation based on whether x > threshold
-     * 
+     *
      * Pattern: Complex conditional logic with multiple FHE.select() calls
      */
     function conditionalCalculation(
-        uint32 x, 
-        uint32 y, 
-        uint32 threshold
+        InEuint calldata x,
+        InEuint calldata y,
+        InEuint calldata threshold
     ) external returns (euint32) {
         euint32 encX = FHE.asEuint32(x);
         euint32 encY = FHE.asEuint32(y);
@@ -280,12 +266,12 @@ contract EncryptedCalculator {
     
     /**
      * @notice Batch operation on multiple values
-     * @param values Array of values to sum
+     * @param values Array of encrypted values to sum
      * @return result Encrypted sum of all values
-     * 
+     *
      * Pattern: Iterative FHE operations
      */
-    function batchSum(uint32[] calldata values) external returns (euint32) {
+    function batchSum(InEuint[] calldata values) external returns (euint32) {
         require(values.length > 0, "Empty array");
         require(values.length <= 10, "Too many values"); // Gas limit protection
         
@@ -307,7 +293,7 @@ contract EncryptedCalculator {
     /**
      * @notice Clear user's stored result
      * @dev Demonstrates cleanup patterns
-     * 
+     *
      * Pattern: State cleanup (encrypted values can't be "deleted", only replaced)
      */
     function clearResult() external {
@@ -327,68 +313,10 @@ contract EncryptedCalculator {
      * @notice Check if user has a stored result
      * @param user Address to check
      * @return hasStoredResult Whether user has a stored result
-     * 
+     *
      * Pattern: Public state queries (non-encrypted data)
      */
     function hasStoredResult(address user) external view returns (bool) {
         return hasResult[user];
     }
 }
-
-/*
-ANTI-PATTERNS DEMONSTRATED ABOVE (DON'T DO THESE):
-
-1. ❌ Missing FHE.allow():
-   function badFunction() external returns (euint32) {
-       euint32 result = FHE.asEuint32(42);
-       return result; // Caller can't decrypt this!
-   }
-
-2. ❌ Using ebool in if statement:
-   function badConditional(euint32 a, euint32 b) external {
-       ebool condition = FHE.gt(a, b);
-       if (condition) { // Won't compile!
-           // ...
-       }
-   }
-
-3. ❌ Forgetting FHE.allowThis() for storage:
-   function badStorage(euint32 value) external {
-       userResults[msg.sender] = value; // Contract loses access!
-   }
-
-4. ❌ Assuming synchronous decryption:
-   function badDecryption() external returns (uint32) {
-       euint32 encrypted = FHE.asEuint32(42);
-       return FHE.decrypt(encrypted); // This won't work!
-   }
-
-SECURITY CHECKLIST FOR THIS CONTRACT:
-✅ All returned encrypted values have FHE.allow()
-✅ Stored encrypted values use FHE.allowThis() 
-✅ No ebool used in if statements
-✅ FHE.select() used for conditional logic
-✅ Proper error handling with FHE.select()
-✅ Access control patterns demonstrated
-✅ Multi-transaction decryption pattern shown
-✅ State management with encrypted data
-✅ Gas limit protection for batch operations
-✅ Clear documentation of all patterns
-
-USAGE EXAMPLES:
-
-// Basic operations
-uint32 result = calculator.add(10, 20);
-// User can now call FHE.decrypt(result) off-chain
-
-// Conditional calculation  
-uint32 result = calculator.conditionalCalculation(100, 50, 75);
-// Returns 150 (100+50) because 100 > 75
-
-// Multi-transaction decryption flow
-bytes32 id = calculator.requestDecryption(21);
-// Off-chain: decrypt the result using the encrypted value
-// Result will be 42 (21 * 2)
-
-REMEMBER: "Without FHE.allow() = passing a locked box without the key!" 🔐
-*/

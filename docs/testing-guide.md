@@ -308,19 +308,61 @@ function testFullDecryptionFlow() public {
 }
 ```
 
-## 🧮 Testing Edge Cases
+## 🧮 AI Edge Case Testing Templates
 
-### Zero Value Testing
+### 🤖 AI Must Always Include Edge Cases
+
+**AI should automatically generate these edge case tests:**
+
+### AI Template: Zero Value Testing
 
 ```solidity
+/**
+ * @notice AI Pattern: Comprehensive zero value testing
+ * @dev AI should test zero values in all operations
+ */
 function testZeroValues() public {
     uint32 zero = 0;
     uint32 nonZero = 42;
     
-    euint32 result = yourContract.addValues(zero, nonZero);
+    // Test zero + non-zero
+    euint32 addResult = yourContract.addValues(zero, nonZero);
+    vm.warp(block.timestamp + 11);
+    assertHashValue(addResult, nonZero);
+    
+    // Test non-zero + zero
+    euint32 addResult2 = yourContract.addValues(nonZero, zero);
+    vm.warp(block.timestamp + 11);
+    assertHashValue(addResult2, nonZero);
+    
+    // Test zero - zero
+    euint32 subResult = yourContract.subtractValues(zero, zero);
+    vm.warp(block.timestamp + 11);
+    assertHashValue(subResult, 0);
+    
+    // Test zero * non-zero
+    euint32 mulResult = yourContract.multiplyValues(zero, nonZero);
+    vm.warp(block.timestamp + 11);
+    assertHashValue(mulResult, 0);
+    
+    console.log("Zero value tests passed");
+}
+
+/**
+ * @notice AI Pattern: Division by zero handling
+ * @dev AI should test how contract handles division by zero
+ */
+function testDivisionByZero() public {
+    uint32 dividend = 42;
+    uint32 divisor = 0;
+    
+    // Test division by zero (should handle gracefully)
+    euint32 result = yourContract.safeDivide(dividend, divisor);
     vm.warp(block.timestamp + 11);
     
-    assertHashValue(result, nonZero);
+    // Expecting original dividend (safe division pattern)
+    assertHashValue(result, dividend);
+    console.log("Division by zero test passed");
 }
 ```
 
@@ -359,41 +401,93 @@ function testBooleanOperations() public {
 }
 ```
 
-## 🚨 Common Testing Mistakes
+## 🚨 Common AI Testing Mistakes
 
-### Mistake 1: Forgetting vm.warp()
+### 🤖 AI Error Prevention Guide
+
+**These are the most common mistakes AI makes in FHE testing:**
+
+### AI Mistake #1: Forgetting vm.warp() (MOST COMMON)
 
 ```solidity
-// ❌ BAD: No timing delay
+// ❌ AI FREQUENTLY GENERATES THIS (WRONG):
 function badTest() public {
     euint32 result = yourContract.operation();
-    assertNotEq(result, euint32.wrap(0)); // May fail unexpectedly
+    assertNotEq(result, euint32.wrap(0)); // Will fail randomly!
 }
 
-// ✅ GOOD: Proper timing
+// ✅ AI SHOULD ALWAYS GENERATE THIS (CORRECT):
 function goodTest() public {
     euint32 result = yourContract.operation();
-    vm.warp(block.timestamp + 11); // Wait for processing
+    vm.warp(block.timestamp + 11); // MANDATORY for AI!
     assertNotEq(result, euint32.wrap(0));
 }
+
+/**
+ * @notice AI Rule: EVERY FHE operation needs vm.warp()
+ * @dev AI must include this after every contract call
+ */
+function aiRuleExample() public {
+    // AI Pattern: Operation + timing + test
+    euint32 result1 = yourContract.operation1();
+    vm.warp(block.timestamp + 11);  // REQUIRED
+    
+    euint32 result2 = yourContract.operation2(result1);
+    vm.warp(block.timestamp + 11);  // REQUIRED AGAIN
+    
+    euint32 result3 = yourContract.operation3(result2);
+    vm.warp(block.timestamp + 11);  // REQUIRED EVERY TIME
+    
+    // Now test results
+    assertNotEq(result3, euint32.wrap(0));
+}
+
+// 🎯 AI PROMPT FIX:
+// "Always add vm.warp(block.timestamp + 11) after every FHE operation in tests"
 ```
 
-### Mistake 2: Testing Encrypted Values Directly
+### AI Mistake #2: Testing Encrypted Values Directly (COMPILATION ERROR)
 
 ```solidity
-// ❌ BAD: Can't compare encrypted values directly
+// ❌ AI OFTEN GENERATES THIS (WRONG):
 function badComparison() public {
     euint32 result = yourContract.operation();
     vm.warp(block.timestamp + 11);
-    assertEq(result, euint32.wrap(42)); // This won't work as expected
+    assertEq(result, euint32.wrap(42)); // Wrong! Can't compare handles directly
 }
 
-// ✅ GOOD: Use hash comparison
+// ❌ ALSO WRONG:
+function alsoWrong() public {
+    euint32 result = yourContract.operation();
+    vm.warp(block.timestamp + 11);
+    assertTrue(result == euint32.wrap(42)); // Wrong! Handle comparison
+}
+
+// ✅ AI SHOULD GENERATE THIS (CORRECT):
 function goodComparison() public {
     euint32 result = yourContract.operation();
     vm.warp(block.timestamp + 11);
-    assertHashValue(result, 42); // This works
+    assertHashValue(result, 42); // Correct! Compare hash of encrypted value
 }
+
+// ✅ ALTERNATIVE CORRECT PATTERNS:
+function testExistence() public {
+    euint32 result = yourContract.operation();
+    vm.warp(block.timestamp + 11);
+    assertNotEq(result, euint32.wrap(0)); // Valid: check result exists
+}
+
+function testMultipleResults() public {
+    euint32 result1 = yourContract.operation1();
+    euint32 result2 = yourContract.operation2();
+    vm.warp(block.timestamp + 11);
+    
+    // Valid: test different operations produce different handles
+    assertNotEq(result1, result2);
+}
+
+// 🎯 AI PROMPT FIX:
+// "Use assertHashValue(encryptedValue, expectedPlaintext) to test encrypted results"
 ```
 
 ### Mistake 3: Not Testing Access Control
@@ -494,8 +588,69 @@ For advanced testing patterns not covered here, refer to:
 - [Foundry Testing Documentation](https://book.getfoundry.sh/forge/tests)
 - [CoFHE Testing Documentation](https://docs.fhenix.zone)
 
+## 🚀 AI Test Automation
+
+### 🤖 Automated Test Generation Scripts
+
+**Create AI-powered test generation:**
+
+```bash
+#!/bin/bash
+# AI Test Generator Script
+echo "Generating comprehensive FHE tests..."
+
+claude --file docs/testing-guide.md \
+      --file src/YourContract.sol \
+      "Generate complete test suite including:
+      - All function tests with proper vm.warp()
+      - Edge cases (zero, max values)
+      - Multi-user isolation tests
+      - Access control validation
+      - Gas optimization tests
+      - Error condition tests
+      Ensure every test follows FHE testing patterns."
+```
+
+### 📊 AI Test Quality Metrics
+
+**AI should achieve these test coverage targets:**
+
+- **Timing Compliance**: 100% of FHE operations have `vm.warp()`
+- **Hash Testing**: All deterministic operations use `assertHashValue()`
+- **Edge Cases**: Zero values, max values, equal values tested
+- **Multi-User**: User isolation and access control tested
+- **Error Conditions**: Invalid inputs and edge cases handled
+- **Gas Efficiency**: Performance tests for expensive operations
+
+### 🎯 AI Test Generation Checklist
+
+**For every contract function, AI should generate:**
+
+✅ **Basic functionality test** with expected values  
+✅ **Edge case test** (zero, max, boundary values)  
+✅ **Multi-user test** (if function involves user state)  
+✅ **Access control test** (verify permissions work correctly)  
+✅ **Error condition test** (invalid inputs, reverts)  
+✅ **Integration test** (function interactions)  
+✅ **Gas optimization test** (for expensive operations)  
+
+### 🔄 Continuous Testing with AI
+
+```bash
+# Pre-commit test generation
+git add . && claude --file docs/testing-guide.md "Generate missing tests for modified contracts"
+
+# CI/CD test validation
+forge test && claude --file docs/testing-guide.md "Review test coverage and suggest improvements"
+
+# Test maintenance
+claude --file docs/testing-guide.md --file test/ "Review existing tests for FHE pattern compliance"
+```
+
 ---
 
-**Remember**: FHE testing requires patience - always use `vm.warp(block.timestamp + 11)` after FHE operations! ⏰
+**🤖 Remember for AI**: FHE testing requires patience - ALWAYS use `vm.warp(block.timestamp + 11)` after FHE operations! ⏰
+
+**🎯 AI Testing Formula**: Proper Timing + Hash Validation + Edge Cases + Multi-User Testing = Bulletproof FHE Tests
 
 *Found a testing issue or pattern missing? [Open an issue](https://github.com/fhenixprotocol/fhe-assistant/issues) to help improve testing for everyone.*

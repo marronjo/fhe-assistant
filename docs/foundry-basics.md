@@ -1,8 +1,23 @@
 # Foundry Basics 🔨
 
-**Essential Foundry commands for FHE development**
+**Essential Foundry commands for AI-assisted FHE development**
 
-This document covers the most commonly used Foundry commands for FHE smart contract development. For advanced Foundry features, refer to the [official Foundry documentation](https://book.getfoundry.sh/).
+This document covers the most commonly used Foundry commands for FHE smart contract development, optimized for AI CLI tools like Claude, Gemini, and OpenAI Codex. For advanced Foundry features, refer to the [official Foundry documentation](https://book.getfoundry.sh/).
+
+## 🤖 AI-Powered Foundry Commands
+
+**Quick AI assistance for Foundry issues:**
+
+```bash
+# AI-assisted debugging
+claude --file docs/foundry-basics.md "My forge build is failing with this error: [paste error]"
+
+# AI-assisted testing
+claude --file docs/testing-guide.md "My FHE tests are failing. Help debug: [paste test output]"
+
+# AI-assisted deployment
+claude --file docs/setup-guide.md "Help me deploy this FHE contract to CoFHE: [paste contract]"
+```
 
 ## 🚀 Quick Start Commands
 
@@ -274,24 +289,52 @@ forge call [CONTRACT_ADDRESS] "someFunction()(uint256)" \
   --rpc-url https://api.cofhe.fhenix.zone
 ```
 
-## 🚨 Troubleshooting Commands
+## 🚨 AI-Assisted Troubleshooting
 
-### Common Issues
+### 🤖 Common AI + Foundry Issues
+
+**When AI-generated code has Foundry issues:**
+
 ```bash
-# Clear cache (fixes many issues)
-forge clean
+# AI-generated contract won't compile
+claude --file docs/core-patterns.md \
+      "Fix this FHE contract compilation error: [paste error]"
 
-# Rebuild from scratch
-forge clean && forge build
+# AI-generated tests are failing
+claude --file docs/testing-guide.md \
+      "Debug these failing FHE tests: [paste test output]"
 
-# Check for version conflicts
-forge --version
-forge list
+# AI-suggested commands not working
+claude --file docs/foundry-basics.md \
+      "This foundry command isn't working: [paste command and error]"
+```
 
-# Update to latest
-foundryup
+### 🔨 Standard Troubleshooting Commands
 
-# Debug failing test
+### AI-Specific Common Issues
+
+```bash
+# AI generated invalid import paths
+# Fix: Check remappings and update imports
+forge remappings
+# Then ask AI: "Fix import paths in this contract using these remappings"
+
+# AI forgot vm.warp() in tests
+# Fix: Add timing to AI-generated tests
+claude --file docs/testing-guide.md \
+      "Add proper vm.warp() timing to these FHE tests: [paste tests]"
+
+# AI used wrong FHE patterns
+# Fix: Reference core patterns
+claude --file docs/core-patterns.md \
+      "Fix FHE pattern violations in this contract: [paste contract]"
+
+# Standard troubleshooting
+forge clean && forge build  # Clear cache and rebuild
+forge --version             # Check version
+foundryup                   # Update Foundry
+
+# Debug with maximum verbosity
 forge test --match-test testFailingFunction -vvvv --show-traces
 ```
 
@@ -309,7 +352,25 @@ forge estimate --rpc-url https://api.cofhe.fhenix.zone
 forge block latest --rpc-url https://api.cofhe.fhenix.zone
 ```
 
-## ⚡ Performance Tips
+## ⚡ AI + Performance Tips
+
+### 🤖 Optimizing AI-Generated Code
+
+```bash
+# Ask AI to optimize gas usage
+claude --file docs/core-patterns.md \
+      "Optimize this FHE contract for gas efficiency: [paste contract]"
+
+# AI-assisted performance analysis
+claude --file src/YourContract.sol \
+      "Analyze gas usage and suggest FHE optimizations"
+
+# Generate gas-optimized tests
+claude --file docs/testing-guide.md \
+      "Create gas optimization tests for this FHE contract: [paste contract]"
+```
+
+### 🔨 Standard Performance Tips
 
 ### Faster Testing
 ```bash
@@ -332,7 +393,27 @@ export FOUNDRY_CACHE=true
 export FOUNDRY_EVM_VERSION=london  # Instead of cancun
 ```
 
-## 📚 Help & Documentation
+## 📚 AI-Enhanced Help & Documentation
+
+### 🤖 AI-First Support Strategy
+
+**Try AI assistance before consulting docs:**
+
+```bash
+# General Foundry + FHE help
+claude --file docs/foundry-basics.md \
+      --file docs/core-patterns.md \
+      "I'm having trouble with [specific issue]. Help me debug."
+
+# Command-specific help with AI context
+claude "Explain this Foundry command for FHE development: forge [command]"
+
+# Error-specific help
+claude --file docs/foundry-basics.md \
+      "Decode this Foundry error in FHE context: [paste error]"
+```
+
+### 📁 Traditional Help Resources
 
 ### Getting Help
 ```bash
@@ -365,8 +446,72 @@ For topics not covered in this basic guide:
 - **Testing**: [Foundry Testing Guide](https://book.getfoundry.sh/forge/tests)
 - **Configuration**: [Foundry Configuration](https://book.getfoundry.sh/reference/config/)
 
+## 🚀 AI-Powered Development Workflow
+
+### 🤖 Complete AI + Foundry FHE Workflow
+
+```bash
+# 1. AI-assisted project setup
+claude --file docs/setup-guide.md "Set up new FHE project with Foundry"
+
+# 2. AI-generated contract development
+claude --file docs/core-patterns.md \
+      --file contracts/calculator.sol \
+      "Build encrypted [your_feature] contract"
+
+# 3. AI-generated comprehensive tests
+claude --file docs/testing-guide.md \
+      --file src/YourContract.sol \
+      "Generate complete test suite"
+
+# 4. Standard Foundry build and test
+forge build
+forge test -vvv
+
+# 5. AI security review
+claude --file docs/security-checklist.md \
+      --file src/YourContract.sol \
+      "Security review against FHE checklist"
+
+# 6. AI-assisted deployment
+claude --file docs/setup-guide.md \
+      "Help deploy to CoFHE with verification"
+
+# 7. AI-powered maintenance
+claude --file docs/ --file src/ "Review and suggest improvements"
+```
+
+### 🎯 AI Troubleshooting Decision Tree
+
+```
+Issue occurs → Try AI assistance first → 
+  │
+  ├─ If resolved → Continue development
+  │
+  └─ If not resolved → Consult official docs →
+      │
+      ├─ If resolved → Update AI with solution
+      │
+      └─ If not resolved → Ask community + share AI analysis
+```
+
+**Community Support Template:**
+```
+💬 "Foundry + FHE Issue - AI analysis included
+
+Issue: [describe problem]
+AI Analysis: [paste AI response]
+Foundry Version: [forge --version]
+Error Output: [paste relevant errors]
+Code: [link or paste relevant code]
+
+Looking for: [specific help needed]"
+```
+
 ---
 
-**Guard Rails**: This document covers essential Foundry commands for FHE development. For advanced Foundry features, deployment strategies, and complex configurations, refer to the official Foundry documentation.
+**🤖 Guard Rails**: This document covers essential Foundry commands for AI-assisted FHE development. For advanced Foundry features, combine AI assistance with the [official Foundry documentation](https://book.getfoundry.sh/).
+
+**🎯 AI + Foundry Formula**: Core Patterns + Working Examples + AI Assistance + Foundry Tools = Efficient FHE Development
 
 *Missing a commonly used command? [Open an issue](https://github.com/fhenixprotocol/fhe-assistant/issues) to help improve this reference.*

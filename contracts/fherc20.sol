@@ -12,10 +12,10 @@ import "@fhenixprotocol/contracts/FHE.sol";
  *      - Encrypted allowance system
  *      - Privacy-preserving total supply
  *      - Anti-pattern examples with explanations
- * 
+ *
  * Key Innovation: Balances are encrypted, but the existence of a balance is public
  * This allows for gas optimization while preserving amount privacy.
- * 
+ *
  * Security Model:
  * - Transfer amounts are private
  * - Account balances are private  
@@ -101,7 +101,7 @@ contract FHERC20 {
      * @notice Get encrypted balance of an account
      * @param account Address to query
      * @return balance Encrypted balance (caller must have permission to decrypt)
-     * 
+     *
      * Pattern: Encrypted balance query with access control
      * Only the account owner or approved parties can decrypt the balance
      */
@@ -125,7 +125,7 @@ contract FHERC20 {
      * @notice Check if an address has any balance (public information)
      * @param account Address to check
      * @return hasAnyBalance True if account has tokens, false otherwise
-     * 
+     *
      * Pattern: Public balance indicator for gas optimization
      */
     function hasAnyBalance(address account) external view returns (bool) {
@@ -159,64 +159,96 @@ contract FHERC20 {
     /**
      * @notice Transfer tokens with encrypted amount
      * @param to Recipient address
-     * @param encryptedAmount Encrypted amount to transfer
+     * @param amount Encrypted amount to transfer
      * @return success True if transfer succeeded
-     * 
+     *
      * Pattern: Zero-knowledge transfer validation
      * The transfer succeeds or fails without revealing the exact amounts
      */
-    function transfer(address to, euint32 encryptedAmount) external returns (bool) {
-        return _transfer(msg.sender, to, encryptedAmount);
-    }
-    
-    /**
-     * @notice Transfer tokens with plaintext amount (gets encrypted)
-     * @param to Recipient address  
-     * @param amount Amount to transfer (will be encrypted)
-     * @return success True if transfer succeeded
-     * 
-     * Pattern: Convenience function with trivial encryption
-     */
-    function transfer(address to, uint32 amount) external returns (bool) {
+    function transfer(address to, InEuint calldata amount) external returns (bool) {
         euint32 encryptedAmount = FHE.asEuint32(amount);
         return _transfer(msg.sender, to, encryptedAmount);
     }
     
     /**
-     * @notice Transfer tokens from one account to another (delegated transfer)
+     * @notice Internal mint function with encrypted amount
+     * @param to Recipient address
+     * @param amount Encrypted amount to mint
+     */
+    function _mint(address to, InEuint calldata amount) internal {
+        euint32 encryptedAmount = FHE.asEuint32(amount);
+        
+        // Update recipient balance
+        euint32 currentBalance = hasBalance[to] ? balances[to] : FHE.asEuint32(0);
+        euint32 newBalance = FHE.add(currentBalance, encryptedAmount);
+        balances[to] = newBalance;
+        FHE.allowThis(newBalance);
+        FHE.allowSender(newBalance);
+        hasBalance[to] = true;
+        
+        // Update total supply
+        _totalSupply = FHE.add(_totalSupply, encryptedAmount);
+        FHE.allowThis(_totalSupply);
+        
+        if (totalSupplyIsPublic) {
+            publicTotalSupply += uint32(FHE.decrypt(_totalSupply)); // Simplified for example
+        }
+        
+        emit Transfer(address(0), to, true);
+        emit Mint(to, true);
+    }
+    
+    /**
+     * @notice Mint new tokens (owner only)
+     * @param to Recipient address
+     * @param amount Encrypted amount to mint
+     * @return success True if minting succeeded
+     */
+    function mint(address to, InEuint calldata amount) external returns (bool) {
+        require(msg.sender == owner, "Only owner can mint");
+        require(to != address(0), "Mint to zero address");
+        require(FHE.decrypt(FHE.asEuint32(amount)) > 0, "Mint amount must be positive");
+        
+        _mint(to, amount);
+        return true;
+    }
+    
+    /**
+     * @notice Transfer tokens with encrypted amount (delegated transfer)
      * @param from Source address
      * @param to Destination address
      * @param encryptedAmount Encrypted amount to transfer
      * @return success True if transfer succeeded
-     * 
+     *
      * Pattern: Delegated transfer with encrypted allowances
      */
     function transferFrom(
         address from, 
         address to, 
-        euint32 encryptedAmount
+        InEuint calldata encryptedAmount
     ) external returns (bool) {
         require(hasAllowance[from][msg.sender], "No allowance granted");
         
+        // Convert encrypted input to internal handle
+        euint32 encAmount = FHE.asEuint32(encryptedAmount);
+        
         // Check allowance using encrypted comparison
         euint32 currentAllowance = allowances[from][msg.sender];
-        ebool sufficientAllowance = FHE.gte(currentAllowance, encryptedAmount);
+        ebool sufficientAllowance = FHE.gte(currentAllowance, encAmount);
         
         // Perform transfer only if allowance is sufficient
-        bool transferSuccess = _conditionalTransfer(from, to, encryptedAmount, sufficientAllowance);
+        bool transferSuccess = _conditionalTransfer(from, to, encAmount, sufficientAllowance);
         
         if (transferSuccess) {
             // Update allowance: allowance = allowance - amount
-            euint32 newAllowance = FHE.sub(currentAllowance, encryptedAmount);
+            euint32 newAllowance = FHE.sub(currentAllowance, encAmount);
             allowances[from][msg.sender] = newAllowance;
             FHE.allowThis(newAllowance);
             
             // Check if allowance is now zero and update indicator
             euint32 zero = FHE.asEuint32(0);
             ebool allowanceIsZero = FHE.eq(newAllowance, zero);
-            
-            // Note: This is a simplification. In production, you might want to 
-            // decrypt allowanceIsZero to update hasAllowance mapping accurately
+            // Simplified: not updating hasAllowance mapping here
         }
         
         return transferSuccess;
@@ -228,7 +260,7 @@ contract FHERC20 {
      * @param to Destination address
      * @param encryptedAmount Encrypted amount to transfer
      * @return success True if transfer succeeded
-     * 
+     *
      * Pattern: Core transfer logic with encrypted balance validation
      */
     function _transfer(
@@ -256,7 +288,7 @@ contract FHERC20 {
      * @param encryptedAmount Amount to transfer
      * @param condition Encrypted condition (true = proceed, false = cancel)
      * @return success Whether transfer was executed
-     * 
+     *
      * Pattern: Conditional execution with FHE.select()
      * IMPORTANT: Both branches execute, condition only selects the result
      */
@@ -291,9 +323,7 @@ contract FHERC20 {
         // Check if sender balance is now zero
         euint32 zero = FHE.asEuint32(0);
         ebool senderBalanceIsZero = FHE.eq(actualSenderBalance, zero);
-        
-        // Note: In a production system, you'd need to decrypt senderBalanceIsZero
-        // to accurately update hasBalance[from]. This is simplified for demonstration.
+        // Simplified: not updating hasBalance[from]
         
         emit Transfer(from, to, true); // Simplified: always emit success
         return true;
@@ -308,30 +338,20 @@ contract FHERC20 {
      * @param spender Address to approve
      * @param encryptedAmount Encrypted amount to approve
      * @return success True if approval succeeded
-     * 
+     *
      * Pattern: Encrypted allowance approval
      */
-    function approve(address spender, euint32 encryptedAmount) external returns (bool) {
+    function approve(address spender, InEuint calldata encryptedAmount) external returns (bool) {
         require(spender != address(0), "Approve to zero address");
         
-        allowances[msg.sender][spender] = encryptedAmount;
+        euint32 encAmt = FHE.asEuint32(encryptedAmount);
+        allowances[msg.sender][spender] = encAmt;
         hasAllowance[msg.sender][spender] = true;
         
-        FHE.allowThis(encryptedAmount);
+        FHE.allowThis(encAmt);
         
         emit Approval(msg.sender, spender, true);
         return true;
-    }
-    
-    /**
-     * @notice Approve spender to transfer plaintext amount
-     * @param spender Address to approve
-     * @param amount Amount to approve (will be encrypted)
-     * @return success True if approval succeeded
-     */
-    function approve(address spender, uint32 amount) external returns (bool) {
-        euint32 encryptedAmount = FHE.asEuint32(amount);
-        return approve(spender, encryptedAmount);
     }
     
     /**
@@ -339,7 +359,7 @@ contract FHERC20 {
      * @param owner Token owner
      * @param spender Approved spender
      * @return allowance Encrypted allowance amount
-     * 
+     *
      * Pattern: Encrypted allowance query with access control
      */
     function allowance(address owner, address spender) external returns (euint32) {
@@ -363,53 +383,14 @@ contract FHERC20 {
     // ================================
     
     /**
-     * @notice Mint new tokens (owner only)
-     * @param to Recipient address
-     * @param amount Amount to mint
-     * @return success True if minting succeeded
-     * 
-     * Pattern: Minting with encrypted total supply update
-     */
-    function mint(address to, uint32 amount) external returns (bool) {
-        require(msg.sender == owner, "Only owner can mint");
-        require(to != address(0), "Mint to zero address");
-        require(amount > 0, "Mint amount must be positive");
-        
-        euint32 encryptedAmount = FHE.asEuint32(amount);
-        
-        // Update recipient balance
-        euint32 currentBalance = hasBalance[to] ? balances[to] : FHE.asEuint32(0);
-        euint32 newBalance = FHE.add(currentBalance, encryptedAmount);
-        
-        balances[to] = newBalance;
-        hasBalance[to] = true;
-        
-        FHE.allowThis(newBalance);
-        
-        // Update total supply
-        _totalSupply = FHE.add(_totalSupply, encryptedAmount);
-        FHE.allowThis(_totalSupply);
-        
-        if (totalSupplyIsPublic) {
-            publicTotalSupply += amount;
-        }
-        
-        emit Transfer(address(0), to, true);
-        emit Mint(to, true);
-        
-        return true;
-    }
-    
-    /**
      * @notice Burn tokens from sender's balance
-     * @param amount Amount to burn
+     * @param amount Encrypted amount to burn
      * @return success True if burning succeeded
-     * 
+     *
      * Pattern: Burning with encrypted balance validation
      */
-    function burn(uint32 amount) external returns (bool) {
+    function burn(InEuint calldata amount) external returns (bool) {
         require(hasBalance[msg.sender], "No balance to burn");
-        require(amount > 0, "Burn amount must be positive");
         
         euint32 encryptedAmount = FHE.asEuint32(amount);
         euint32 currentBalance = balances[msg.sender];
@@ -431,14 +412,13 @@ contract FHERC20 {
         FHE.allowThis(_totalSupply);
         
         if (totalSupplyIsPublic) {
-            publicTotalSupply -= amount;
+            publicTotalSupply -= uint32(FHE.decrypt(encryptedAmount)); // Simplified
         }
         
         // Check if balance is now zero
         euint32 zero = FHE.asEuint32(0);
         ebool balanceIsZero = FHE.eq(actualNewBalance, zero);
-        
-        // Note: In production, decrypt balanceIsZero to update hasBalance[msg.sender]
+        // Simplified: not updating hasBalance[msg.sender]
         
         emit Transfer(msg.sender, address(0), true);
         emit Burn(msg.sender, true);
@@ -455,15 +435,19 @@ contract FHERC20 {
      * @param amount1 First encrypted amount
      * @param amount2 Second encrypted amount
      * @return result Encrypted boolean result
-     * 
+     *
      * Pattern: Encrypted comparison utility
      */
-    function compareAmounts(euint32 amount1, euint32 amount2) external returns (ebool) {
-        // Caller must have access to both amounts
-        FHE.allowThis(amount1);
-        FHE.allowThis(amount2);
+    function compareAmounts(InEuint calldata amount1, InEuint calldata amount2) external returns (ebool) {
+        // Convert encrypted inputs to internal handles
+        euint32 enc1 = FHE.asEuint32(amount1);
+        euint32 enc2 = FHE.asEuint32(amount2);
         
-        ebool result = FHE.eq(amount1, amount2);
+        // Caller must have access to both amounts
+        FHE.allowThis(enc1);
+        FHE.allowThis(enc2);
+        
+        ebool result = FHE.eq(enc1, enc2);
         FHE.allow(result, msg.sender);
         
         return result;
@@ -474,14 +458,18 @@ contract FHERC20 {
      * @param amount1 First amount
      * @param amount2 Second amount
      * @return result Encrypted minimum amount
-     * 
+     *
      * Pattern: Encrypted mathematical operations
      */
-    function min(euint32 amount1, euint32 amount2) external returns (euint32) {
-        FHE.allowThis(amount1);
-        FHE.allowThis(amount2);
+    function min(InEuint calldata amount1, InEuint calldata amount2) external returns (euint32) {
+        // Convert encrypted inputs to internal handles
+        euint32 enc1 = FHE.asEuint32(amount1);
+        euint32 enc2 = FHE.asEuint32(amount2);
         
-        euint32 result = FHE.min(amount1, amount2);
+        FHE.allowThis(enc1);
+        FHE.allowThis(enc2);
+        
+        euint32 result = FHE.min(enc1, enc2);
         FHE.allow(result, msg.sender);
         
         return result;
@@ -512,87 +500,7 @@ contract FHERC20 {
         totalSupplyIsPublic = _public;
         
         if (_public) {
-            // Note: In production, you'd decrypt _totalSupply to set publicTotalSupply
-            // This is simplified for demonstration
+            // Simplified: in production, you'd decrypt _totalSupply to set publicTotalSupply
         }
     }
 }
-
-/*
-ANTI-PATTERNS TO AVOID (DON'T DO THESE):
-
-1. ❌ Direct balance comparison without encryption:
-   function badTransfer(address to, uint32 amount) external {
-       require(publicBalances[msg.sender] >= amount, "Insufficient balance");
-       // This reveals exact balance information!
-   }
-
-2. ❌ Exposing encrypted data without access control:
-   function badBalanceOf(address account) external returns (euint32) {
-       return balances[account]; // No FHE.allow()!
-   }
-
-3. ❌ Using ebool in if statements:
-   function badConditional(euint32 balance, euint32 amount) external {
-       ebool sufficient = FHE.gte(balance, amount);
-       if (sufficient) { // Won't compile!
-           // transfer logic
-       }
-   }
-
-4. ❌ Not tracking public indicators:
-   function badMint(address to, uint32 amount) external {
-       euint32 encrypted = FHE.asEuint32(amount);
-       balances[to] = encrypted;
-       // Missing: hasBalance[to] = true;
-   }
-
-5. ❌ Forgetting FHE.allowThis() for storage:
-   function badApprove(address spender, euint32 amount) external {
-       allowances[msg.sender][spender] = amount; // Contract loses access!
-   }
-
-SECURITY CHECKLIST FOR FHERC20:
-✅ Dual balance system (encrypted + indicators)
-✅ All encrypted returns have FHE.allow()
-✅ All stored encrypted values use FHE.allowThis()
-✅ No ebool used in if statements
-✅ FHE.select() used for conditional logic
-✅ Access control on sensitive functions
-✅ Zero-knowledge transfer validation
-✅ Proper allowance management
-✅ Owner-only functions protected
-✅ Zero address checks
-✅ Overflow/underflow handled by FHE operations
-
-USAGE EXAMPLES:
-
-// Deploy with public total supply
-FHERC20 token = new FHERC20("Private Token", "PRIV", 18, 1000000, true);
-
-// Transfer with encrypted amount
-euint32 amount = FHE.asEuint32(100);
-token.transfer(recipient, amount);
-
-// Transfer with plaintext amount (gets encrypted)
-token.transfer(recipient, 100);
-
-// Check if address has balance (public)
-bool hasBal = token.hasAnyBalance(user);
-
-// Get encrypted balance (only account owner can decrypt)
-euint32 balance = token.balanceOf(user);
-
-// Approve encrypted allowance
-token.approve(spender, FHE.asEuint32(50));
-
-PRIVACY GUARANTEES:
-
-✓ Transfer amounts are never revealed
-✓ Account balances remain private
-✓ Allowance amounts are encrypted
-✓ Total supply can be private or public
-✓ Who owns tokens is public (for gas optimization)
-
-REMEMBER: "Without FHE.allow() = passing a locked box without the key!" 🔐
-*/

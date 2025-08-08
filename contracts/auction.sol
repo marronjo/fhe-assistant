@@ -200,16 +200,19 @@ contract SealedBidAuction {
      * 
      * Pattern: Encrypted bid submission with deposit validation
      */
-    function bid(euint32 encryptedAmount) external payable onlyDuringPhase(AuctionPhase.Bidding) {
+    function bid(InEuint calldata encryptedAmount) external payable onlyDuringPhase(AuctionPhase.Bidding) {
         require(block.timestamp < auctionInfo.endTime, "Bidding period ended");
         require(msg.value == auctionInfo.bidDeposit, "Incorrect deposit amount");
         require(!hasBid[msg.sender], "Already submitted bid");
         
+        // Convert encrypted input to internal handle
+        euint32 encAmount = FHE.asEuint32(encryptedAmount);
+        
         // Store encrypted bid
-        FHE.allowThis(encryptedAmount);
+        FHE.allowThis(encAmount);
         
         bids[msg.sender] = Bid({
-            amount: encryptedAmount,
+            amount: encAmount,
             deposit: uint32(msg.value),
             hasDecryptionAccess: false,
             refunded: false
@@ -220,23 +223,12 @@ contract SealedBidAuction {
         totalDeposits += msg.value;
         
         // Grant bidder access to their own bid for later verification
-        FHE.allow(encryptedAmount, msg.sender);
+        FHE.allow(encAmount, msg.sender);
         
         emit BidSubmitted(msg.sender, true);
     }
     
-    /**
-     * @notice Submit bid with plaintext amount (gets encrypted)
-     * @param amount Bid amount (will be encrypted)
-     * 
-     * Pattern: Convenience function with trivial encryption
-     */
-    function bid(uint32 amount) external payable {
-        require(amount >= auctionInfo.minimumBid, "Bid below minimum");
-        
-        euint32 encryptedAmount = FHE.asEuint32(amount);
-        bid(encryptedAmount);
-    }
+
     
     /**
      * @notice Increase existing bid
@@ -244,14 +236,17 @@ contract SealedBidAuction {
      * 
      * Pattern: Bid modification with encrypted arithmetic
      */
-    function increaseBid(euint32 encryptedAdditionalAmount) external payable onlyDuringPhase(AuctionPhase.Bidding) {
+    function increaseBid(InEuint calldata encryptedAdditionalAmount) external payable onlyDuringPhase(AuctionPhase.Bidding) {
         require(block.timestamp < auctionInfo.endTime, "Bidding period ended");
         require(hasBid[msg.sender], "No existing bid");
         require(msg.value > 0, "Must send additional deposit");
         
+        // Convert encrypted input to internal handle
+        euint32 encAdditionalAmount = FHE.asEuint32(encryptedAdditionalAmount);
+        
         // Get current bid and add additional amount
         euint32 currentBid = bids[msg.sender].amount;
-        euint32 newBid = FHE.add(currentBid, encryptedAdditionalAmount);
+        euint32 newBid = FHE.add(currentBid, encAdditionalAmount);
         
         // Update bid
         bids[msg.sender].amount = newBid;
@@ -500,7 +495,7 @@ contract SealedBidAuction {
      * 
      * Pattern: Encrypted bid comparison utility
      */
-    function compareBidToAmount(uint32 referenceAmount) external returns (ebool) {
+    function compareBidToAmount(InEuint calldata referenceAmount) external returns (ebool) {
         require(hasBid[msg.sender], "No bid submitted");
         
         euint32 bidAmount = bids[msg.sender].amount;

@@ -1,21 +1,62 @@
 # FHE Security Checklist 🛡️
 
-**Pre-flight checklist for FHE smart contract security**
+**Pre-flight checklist for FHE smart contract security - Optimized for AI code review**
 
 Use this checklist when reviewing FHE contracts or asking AI assistants to review your code. Each item represents a critical security consideration unique to FHE development.
 
+## 🤖 AI Code Review Quick Commands
+
+**Copy-paste these prompts for instant AI security review:**
+
+```
+🎯 "Review this FHE contract against the security checklist. Flag all issues and provide fixes: [paste code]"
+
+🎯 "Check if this FHE code follows proper access control patterns: [paste code]"
+
+🎯 "Validate this FHE contract uses FHE.select() correctly and never uses ebool in if statements: [paste code]"
+
+🎯 "Audit this FHE contract for missing FHE.allow() and FHE.allowThis() calls: [paste code]"
+```
+
 ## 🔍 Pre-Review Setup
 
-Before starting your security review:
+**For AI-Assisted Security Review:**
 
 - [ ] **Contract compiles without errors** (`forge build`)
 - [ ] **All tests pass** (`forge test`)
 - [ ] **FHE library properly imported** (`import "@fhenixprotocol/contracts/FHE.sol";`)
-- [ ] **Access control patterns understood** (reviewer familiar with FHE.allow())
+- [ ] **AI understands FHE patterns** (loaded core-patterns.md into AI context)
+- [ ] **Security checklist loaded** (this file provided to AI for reference)
+
+### 🤖 AI Review Preparation Commands
+
+```bash
+# Load security context into AI
+claude --file docs/security-checklist.md \
+      --file docs/core-patterns.md \
+      --file src/YourContract.sol \
+      "Perform comprehensive security review of this FHE contract"
+
+# Quick security scan
+claude --file docs/security-checklist.md \
+      "Review this code snippet for FHE security issues: [paste code]"
+```
 
 ## 🔐 Access Control Review
 
+### 🤖 AI Security Validation Prompts
+
+**For AI to check access control automatically:**
+
+```
+🎯 "Scan this contract for missing FHE.allow() calls on all return statements"
+🎯 "Verify every encrypted storage operation uses FHE.allowThis()"
+🎯 "Check if any functions return encrypted values without granting access"
+```
+
 ### Critical: FHE.allow() Patterns
+
+**🤖 AI Checklist: For every encrypted return, AI should verify:**
 
 - [ ] **All returned encrypted values have FHE.allow()**
   ```solidity
@@ -93,6 +134,15 @@ Before starting your security review:
 
 ## 💰 Encrypted Token Security (FHERC20)
 
+### 🤖 AI Token Security Validation
+
+**AI prompts for token security:**
+```
+🎯 "Review this FHERC20 implementation for balance privacy leaks"
+🎯 "Check if this encrypted token properly validates transfers using FHE.select()"
+🎯 "Verify this token contract doesn't reveal balances through events or reverts"
+```
+
 ### Balance Protection
 
 - [ ] **Dual balance system implemented**
@@ -118,6 +168,15 @@ Before starting your security review:
   ```
 
 ## 🔄 Decryption Security
+
+### 🤖 AI Decryption Pattern Validation
+
+**AI prompts for decryption security:**
+```
+🎯 "Check if this contract properly manages multi-transaction decryption state"
+🎯 "Verify no functions assume synchronous decryption of encrypted values"
+🎯 "Review decryption request tracking for potential race conditions"
+```
 
 ### Multi-Transaction Patterns
 
@@ -149,6 +208,15 @@ Before starting your security review:
 
 ## 🔄 Cross-Contract Security
 
+### 🤖 AI Cross-Contract Validation
+
+**AI prompts for cross-contract security:**
+```
+🎯 "Check if contracts properly grant cross-contract permissions for encrypted data sharing"
+🎯 "Verify all contract-to-contract encrypted data transfers have explicit FHE.allow() calls"
+🎯 "Review permission scope - ensure no overly broad access grants"
+```
+
 ### Permission Management
 
 - [ ] **Explicit permissions for contract interactions**
@@ -174,6 +242,16 @@ Before starting your security review:
   ```
 
 ## 🧪 Testing Security
+
+### 🤖 AI Test Generation for Security
+
+**AI prompts for security test generation:**
+```
+🎯 "Generate comprehensive access control tests for this FHE contract"
+🎯 "Create tests that verify users can only decrypt their own encrypted data"
+🎯 "Write edge case tests for FHE.select() conditional logic"
+🎯 "Generate tests for cross-contract permission scenarios"
+```
 
 ### Test Coverage Requirements
 
@@ -211,7 +289,27 @@ Before starting your security review:
 
 ## 🚨 Common Vulnerabilities
 
-### Check for These Anti-Patterns
+### 🤖 AI Vulnerability Scanner Prompts
+
+**Use these prompts to have AI scan for specific vulnerabilities:**
+
+```
+🎯 "Scan this FHE contract for these vulnerabilities:
+- Missing FHE.allow() calls
+- ebool used in if statements  
+- Missing FHE.allowThis() for storage
+- Over-permissive access grants
+- Unhandled decryption race conditions
+[paste code]"
+
+🎯 "Check this contract against the common FHE anti-patterns list"
+
+🎯 "Identify any functions that could leak encrypted data through side channels"
+```
+
+### 🤖 AI Anti-Pattern Detection
+
+**AI should automatically flag these patterns:**
 
 - [ ] **Missing FHE.allow() calls**
   - Functions returning encrypted values without granting access
@@ -235,25 +333,70 @@ Before starting your security review:
 
 ## 🎯 Specific Pattern Checks
 
+### 🤖 AI Pattern Validation Prompts
+
+**For specific FHE application types:**
+
 ### Encrypted Auction Security
+
+```
+🎯 AI Prompt: "Review this encrypted auction for:
+- Bid privacy maintained until reveal phase
+- Winner determination doesn't leak losing bids  
+- Refund mechanism preserves privacy
+- No bid amount leakage through gas usage patterns
+[paste auction contract]"
+```
 
 - [ ] **Bid privacy maintained until reveal**
 - [ ] **Winner determination doesn't leak losing bids**
 - [ ] **Refund mechanism preserves privacy**
+- [ ] **Gas usage doesn't leak bid information**
 
 ### Encrypted Voting Security
+
+```
+🎯 AI Prompt: "Audit this encrypted voting system for:
+- Vote privacy maintained throughout entire process
+- Vote counting doesn't reveal individual votes
+- Result revelation is properly controlled
+- No voter information leakage through timing or gas
+[paste voting contract]"
+```
 
 - [ ] **Vote privacy maintained throughout**
 - [ ] **Vote counting doesn't reveal individual votes**
 - [ ] **Result revelation is controlled**
+- [ ] **No timing-based vote leakage**
 
 ### Encrypted Gaming Security
+
+```
+🎯 AI Prompt: "Security review this encrypted gaming contract for:
+- Game state privacy preserved across all operations
+- Player actions don't leak strategic information
+- Random number generation is secure and unpredictable
+- No advantage gained through transaction analysis
+[paste gaming contract]"
+```
 
 - [ ] **Game state privacy preserved**
 - [ ] **Player actions don't leak information**
 - [ ] **Random number generation secure**
+- [ ] **No transaction analysis advantages**
 
 ## 📋 Review Sign-off
+
+### 🤖 AI-Assisted Review Completion
+
+**AI Final Review Prompts:**
+```
+🎯 "Provide final security assessment summary for this FHE contract with risk rating"
+
+🎯 "Generate security review report with all identified issues and fixes"
+
+🎯 "Create deployment readiness checklist for this FHE contract"
+```
 
 After completing all checks:
 
@@ -261,6 +404,8 @@ After completing all checks:
 - [ ] **No anti-patterns identified**
 - [ ] **Test coverage adequate**
 - [ ] **Documentation updated**
+- [ ] **AI security scan completed**
+- [ ] **All AI-identified issues resolved**
 
 ### Reviewer Information
 
@@ -274,10 +419,16 @@ After completing all checks:
 
 ### Risk Assessment
 
-**Overall Risk Level**:
-- [ ] Low (All checks passed, comprehensive testing)
-- [ ] Medium (Minor issues identified, needs follow-up)
-- [ ] High (Critical issues found, requires immediate attention)
+**Overall Risk Level** (AI-Assisted Assessment):
+- [ ] Low (All checks passed, comprehensive testing, AI validation clean)
+- [ ] Medium (Minor issues identified, needs follow-up, AI suggestions implemented)
+- [ ] High (Critical issues found, requires immediate attention, AI blocked deployment)
+
+**AI Security Score**: ___/10
+- Access Control: ___/3
+- Pattern Compliance: ___/3  
+- Vulnerability Scan: ___/2
+- Best Practices: ___/2
 
 **Identified Issues**:
 1. _______________
@@ -291,11 +442,40 @@ After completing all checks:
 
 ## 🤝 Community Review
 
+### 🤖 AI + Human Review Strategy
+
+**Recommended review layers:**
+1. **AI Security Scan** (this checklist) - Automated pattern detection
+2. **Human Expert Review** - Business logic and edge cases
+3. **Community Review** - Broader security perspective
+4. **Formal Audit** - Professional security assessment
+
 Consider getting additional eyes on your contract:
 
+- [ ] **AI security review completed** (using this checklist)
 - [ ] **Post in [Fhenix Discord](https://discord.gg/FuVgxrvJMY) for community review**
 - [ ] **Submit to bug bounty programs when available**
 - [ ] **Request formal audit for high-value contracts**
+
+### 🎯 AI Security Review Templates
+
+**For community review posts:**
+```
+💬 "I've completed AI security review using the FHE checklist. 
+Looking for human review of business logic and edge cases.
+Contract: [link/code]
+AI Security Score: X/10
+Known issues: [list]"
+```
+
+**For audit preparation:**
+```
+💬 "Preparing for formal audit. AI security review completed.
+All automated checks passed. Focus areas for auditor:
+- [Complex business logic]
+- [Cross-contract interactions]
+- [Economic security model]"
+```
 
 ## 🔗 Additional Resources
 
@@ -303,8 +483,50 @@ For items not covered in this checklist, refer to:
 - [Fhenix Documentation](https://docs.fhenix.zone)
 - [FHE Security Best Practices](https://docs.fhenix.zone/docs/devdocs/Security/best_practices)
 
+## 🚀 AI Security Automation
+
+### 🤖 Automated Security Scripts
+
+**Create AI-powered security check scripts:**
+
+```bash
+# AI security review script
+#!/bin/bash
+echo "Running AI FHE Security Review..."
+claude --file docs/security-checklist.md \
+      --file docs/core-patterns.md \
+      --file src/*.sol \
+      "Comprehensive security review against FHE checklist. Provide detailed report."
+```
+
+### 📊 Security Metrics for AI
+
+**Track these metrics in AI reviews:**
+- **Access Control Coverage**: % of encrypted returns with FHE.allow()
+- **Pattern Compliance**: % following FHE.select() vs if patterns
+- **Storage Security**: % of encrypted storage with FHE.allowThis()
+- **Test Coverage**: % of security scenarios tested
+- **Documentation Score**: Quality of FHE pattern documentation
+
+### 🎯 Continuous Security with AI
+
+**Integrate AI security checks into development:**
+
+```bash
+# Pre-commit hook
+git add . && claude --file docs/security-checklist.md --file src/modified_files "Quick security scan of changes"
+
+# CI/CD integration  
+forge test && claude --file docs/security-checklist.md --file src/ "Security review for deployment"
+
+# Pre-deployment final check
+claude --file docs/security-checklist.md --file src/ "Final deployment security clearance"
+```
+
 ---
 
-**Remember**: FHE security is different from traditional smart contract security. Access control is mandatory, not optional! 🔐
+**🤖 Remember for AI**: FHE security is different from traditional smart contract security. Access control is mandatory, not optional! 🔐
+
+**🎯 AI Security Formula**: Automated Pattern Detection + Human Business Logic Review = Secure FHE Contracts
 
 *Found a security issue or pattern missing from this checklist? [Open an issue](https://github.com/fhenixprotocol/fhe-assistant/issues) to help protect the entire community.*
