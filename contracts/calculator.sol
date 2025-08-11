@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import "@fhenixprotocol/contracts/FHE.sol";
+import {FHE, InEuint32, euint32, ebool} from "@fhenixprotocol/cofhe-contracts/FHE.sol";
 
 /**
  * @title EncryptedCalculator
@@ -48,7 +48,7 @@ contract EncryptedCalculator {
         euint32 result = FHE.add(encA, encB);
         
         // CRITICAL: Grant access to caller - without this, caller can't decrypt!
-        FHE.allow(result, msg.sender);
+        FHE.allowSender(result);
         
         emit OperationCompleted(msg.sender, "add");
         return result;
@@ -69,7 +69,7 @@ contract EncryptedCalculator {
         // FHE subtraction handles underflow automatically (wrapping behavior)
         euint32 result = FHE.sub(encA, encB);
         
-        FHE.allow(result, msg.sender);
+        FHE.allowSender(result);
         
         emit OperationCompleted(msg.sender, "subtract");
         return result;
@@ -90,7 +90,7 @@ contract EncryptedCalculator {
         // FHE multiplication (more computationally expensive than add/sub)
         euint32 result = FHE.mul(encA, encB);
         
-        FHE.allow(result, msg.sender);
+        FHE.allowSender(result);
         
         emit OperationCompleted(msg.sender, "multiply");
         return result;
@@ -117,7 +117,7 @@ contract EncryptedCalculator {
         euint32 divisionResult = FHE.div(encA, encB);
         euint32 result = FHE.select(isZero, encA, divisionResult);
         
-        FHE.allow(result, msg.sender);
+        FHE.allowSender(result);
         
         emit OperationCompleted(msg.sender, "divide");
         return result;
@@ -141,7 +141,7 @@ contract EncryptedCalculator {
         // Select maximum using conditional logic
         euint32 result = FHE.select(aIsGreater, encA, encB);
         
-        FHE.allow(result, msg.sender);
+        FHE.allowSender(result);
         
         emit OperationCompleted(msg.sender, "maximum");
         return result;
@@ -173,7 +173,7 @@ contract EncryptedCalculator {
         hasResult[msg.sender] = true;
         
         // Also grant access to user for immediate use
-        FHE.allow(result, msg.sender);
+        FHE.allowSender(result);
         
         emit OperationCompleted(msg.sender, "complexCalculation");
         return result;
@@ -185,15 +185,9 @@ contract EncryptedCalculator {
      *
      * Pattern: Retrieving stored encrypted data with access control
      */
-    function getStoredResult() external returns (euint32) {
+    function getStoredResult() external view returns (euint32) {
         require(hasResult[msg.sender], "No stored result found");
-        
-        euint32 result = userResults[msg.sender];
-        
-        // Grant access to caller for this specific result
-        FHE.allow(result, msg.sender);
-        
-        return result;
+        return userResults[msg.sender];
     }
     
     /**
@@ -219,7 +213,7 @@ contract EncryptedCalculator {
         userResults[msg.sender] = doubled;
         
         // Grant access to user for decryption
-        FHE.allow(doubled, msg.sender);
+        FHE.allowSender(doubled);
         
         emit DecryptionRequested(msg.sender, doubled);
         
@@ -258,7 +252,7 @@ contract EncryptedCalculator {
             calculation2   // Use multiplication if x <= threshold
         );
         
-        FHE.allow(result, msg.sender);
+        FHE.allowSender(result);
         
         emit OperationCompleted(msg.sender, "conditionalCalculation");
         return result;
@@ -284,7 +278,7 @@ contract EncryptedCalculator {
             result = FHE.add(result, nextValue);
         }
         
-        FHE.allow(result, msg.sender);
+        FHE.allowSender(result);
         
         emit OperationCompleted(msg.sender, "batchSum");
         return result;

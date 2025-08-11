@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import "@fhenixprotocol/contracts/FHE.sol";
+import {FHE, InEuint32, euint32, ebool} from "@fhenixprotocol/cofhe-contracts/FHE.sol";
 
 /**
  * @title FHERC20 - Encrypted ERC20 Token
@@ -105,20 +105,12 @@ contract FHERC20 {
      * Pattern: Encrypted balance query with access control
      * Only the account owner or approved parties can decrypt the balance
      */
-    function balanceOf(address account) external returns (euint32) {
+    function balanceOf(address account) external view returns (euint32) {
         require(hasBalance[account], "Account has no balance");
+        require(msg.sender == account, "Can only query own balance");
         
-        euint32 balance = balances[account];
-        
-        // Grant access to the account owner
-        FHE.allow(balance, account);
-        
-        // Also grant access to caller if they're querying their own balance
-        if (msg.sender == account) {
-            FHE.allow(balance, msg.sender);
-        }
-        
-        return balance;
+        // User already has access to their own balance from when it was stored
+        return balances[account];
     }
     
     /**
@@ -145,10 +137,10 @@ contract FHERC20 {
      * @notice Get encrypted total supply
      * @return supply Encrypted total supply (only owner can decrypt)
      */
-    function encryptedTotalSupply() external returns (euint32) {
+    function encryptedTotalSupply() external view returns (euint32) {
         require(msg.sender == owner, "Only owner can access encrypted total supply");
         
-        FHE.allow(_totalSupply, owner);
+        // Owner already has access to total supply from when it was stored
         return _totalSupply;
     }
     
@@ -167,6 +159,8 @@ contract FHERC20 {
      */
     function transfer(address to, InEuint32 calldata amount) external returns (bool) {
         euint32 encryptedAmount = FHE.asEuint32(amount);
+        uint32 a = 10;
+        euint32 b = FHE.asEuint32(a);
         return _transfer(msg.sender, to, encryptedAmount);
     }
     
@@ -362,20 +356,15 @@ contract FHERC20 {
      *
      * Pattern: Encrypted allowance query with access control
      */
-    function allowance(address owner, address spender) external returns (euint32) {
+    function allowance(address owner, address spender) external view returns (euint32) {
         require(hasAllowance[owner][spender], "No allowance granted");
         require(
             msg.sender == owner || msg.sender == spender, 
             "Only owner or spender can view allowance"
         );
         
-        euint32 allowanceAmount = allowances[owner][spender];
-        
-        // Grant access to both owner and spender
-        FHE.allow(allowanceAmount, owner);
-        FHE.allow(allowanceAmount, spender);
-        
-        return allowanceAmount;
+        // Owner and spender already have access to allowance from when it was granted
+        return allowances[owner][spender];
     }
     
     // ================================
@@ -448,7 +437,7 @@ contract FHERC20 {
         FHE.allowThis(enc2);
         
         ebool result = FHE.eq(enc1, enc2);
-        FHE.allow(result, msg.sender);
+        FHE.allowSender(result);  // New computed value needs access
         
         return result;
     }
@@ -470,7 +459,7 @@ contract FHERC20 {
         FHE.allowThis(enc2);
         
         euint32 result = FHE.min(enc1, enc2);
-        FHE.allow(result, msg.sender);
+        FHE.allowSender(result);  // New computed value needs access
         
         return result;
     }
