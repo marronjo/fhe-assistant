@@ -6,32 +6,21 @@ Train AI assistants (Claude, ChatGPT, Gemini, etc.) on FHE development patterns 
 
 ## 🚀 Quick Start (30 seconds)
 
-### Essential Files First
+### Essential File
 ```
-Load these two files into any AI:
-📋 docs/core-patterns.md      (10KB) - FHE fundamentals & mental models
-🛡️ docs/security-checklist.md (9KB) - Security patterns & review checklist
+Load this comprehensive reference into any AI:
+📚 core.md (13KB) - Complete FHE library reference & patterns
 ```
 
 ### AI Platforms
 
 **Claude Code:**
 ```bash
-claude --file docs/core-patterns.md --file docs/security-checklist.md \
-      "Help me build FHE smart contracts using these patterns"
+claude "Read the fhe-assistant/core.md file and help me build FHE smart contracts using these patterns"
 ```
 
 **Other AIs (ChatGPT, Gemini, etc.):**
-Copy-paste both files and say: *"This is FHE reference material. Help me build encrypted smart contracts."*
-
-## 📁 When You Need More
-
-```
-FOR CODING EXAMPLES:    + contracts/calculator.sol  (basic patterns)
-FOR TOKEN CONTRACTS:    + contracts/fherc20.sol     (advanced patterns)  
-FOR SETUP & TESTING:    + docs/setup-guide.md       (configuration)
-FOR EVERYTHING:         All files                    (complete reference)
-```
+Copy-paste the core.md file and say: *"This is FHE reference material. Help me build encrypted smart contracts."*
 
 ## 🎯 Proven AI Prompts
 
@@ -62,18 +51,18 @@ FOR EVERYTHING:         All files                    (complete reference)
 ## 📁 What's Inside
 
 ```
-📋 docs/core-patterns.md      → FHE mental models & patterns (ESSENTIAL)
-🛡️ docs/security-checklist.md → Security review & common vulnerabilities (ESSENTIAL)  
-⚙️ docs/setup-guide.md        → Foundry/Hardhat configuration
-🧪 docs/testing-guide.md      → CoFheTest patterns & best practices
-📚 docs/fhe-context.md        → Ecosystem overview & background
-⚡ docs/foundry-basics.md     → Essential development commands
-
-📝 contracts/calculator.sol   → Basic FHE operations (START HERE)
-🪙 contracts/fherc20.sol      → Encrypted token implementation  
-🏛️ contracts/auction.sol      → Sealed bid auction (ADVANCED)
-🔧 contracts/test-example.sol → Comprehensive test examples
+📚 core.md    → Comprehensive FHE library reference (EVERYTHING YOU NEED)
+📖 README.md  → This quick start guide
 ```
+
+**The core.md file includes:**
+- 🔢 All encrypted data types (ebool, euint8-256, eaddress)
+- ➕ Complete operation reference (arithmetic, comparison, logical)
+- 🔐 Access control patterns (FHE.allow*, critical for security)
+- 🔄 Conditional operations (FHE.select - the only way to use ebool)
+- 🔓 Decryption workflows (multi-transaction patterns)
+- 🚨 Common mistakes and debugging guide
+- ✅ Working code templates and examples
 
 ## 🤝 Community Resources
 
