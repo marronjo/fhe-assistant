@@ -9,7 +9,6 @@ import {FHE, InEuint128, euint128} from "@fhenixprotocol/cofhe-contracts/FHE.sol
 import {EncryptedStorage} from "../contracts/EncryptedStorage.sol";
 
 contract EncryptedStorageTest is Test, CoFheTest {
-
     EncryptedStorage private encryptedStorage;
 
     function setUp() public {
@@ -25,7 +24,7 @@ contract EncryptedStorageTest is Test, CoFheTest {
     }
 
     function test_increment(uint128 _num, uint128 _inc) public {
-        vm.assume(type(uint128).max - _num >= _inc);    //prevent overflow
+        vm.assume(type(uint128).max - _num >= _inc); //prevent overflow
 
         InEuint128 memory num = createInEuint128(_num, address(this));
         encryptedStorage.store(num);
@@ -37,9 +36,8 @@ contract EncryptedStorageTest is Test, CoFheTest {
         assertHashValue(counter, _num + _inc);
     }
 
-
     function test_decrement(uint128 _num, uint128 _dec) public {
-        vm.assume(_num >= _dec);    //prevent underflow
+        vm.assume(_num >= _dec); //prevent underflow
 
         InEuint128 memory num = createInEuint128(_num, address(this));
         encryptedStorage.store(num);
