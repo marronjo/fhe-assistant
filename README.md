@@ -9,7 +9,7 @@ Train AI assistants (Claude, ChatGPT, Gemini, etc.) on FHE development patterns 
 ### Essential File
 ```
 Load this comprehensive reference into any AI:
-📚 core.md (13KB) - Complete FHE library reference & patterns
+📚 core.md (30KB) - Complete FHE library reference & patterns
 ```
 
 ### AI Platforms
