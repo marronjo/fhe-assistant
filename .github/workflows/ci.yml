@@ -28,7 +28,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          forge install fhenixprotocol/cofhe-contracts
+          forge install fhenixprotocol/cofhe-contracts@0.0.13
           forge install fhenixprotocol/cofhe-mock-contracts
 
       - name: Check formatting
