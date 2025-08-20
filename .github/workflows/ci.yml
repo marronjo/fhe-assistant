@@ -27,7 +27,9 @@ jobs:
           version: nightly
 
       - name: Install dependencies
-        run: forge install
+        run: |
+          forge install fhenixprotocol/cofhe-contracts
+          forge install fhenixprotocol/cofhe-mock-contracts
 
       - name: Check formatting
         run: forge fmt --check
