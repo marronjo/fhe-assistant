@@ -6,7 +6,7 @@ import {CoFheTest} from "@fhenixprotocol/cofhe-mock-contracts/CoFheTest.sol";
 
 import {FHE, InEuint128, euint128} from "@fhenixprotocol/cofhe-contracts/FHE.sol";
 
-import {EncryptedStorage} from "../src/EncryptedStorage.sol";
+import {EncryptedStorage} from "../contracts/EncryptedStorage.sol";
 
 contract EncryptedStorageTest is Test, CoFheTest {
 
