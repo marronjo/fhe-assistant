@@ -7,7 +7,7 @@ import {EncryptedStorage} from "../contracts/EncryptedStorage.sol";
 contract EncryptedStorageScript is Script {
     function setUp() public {}
 
-    function run() public returns(EncryptedStorage encryptedStorage) {
+    function run() public returns (EncryptedStorage encryptedStorage) {
         vm.broadcast();
         encryptedStorage = new EncryptedStorage();
     }

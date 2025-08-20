@@ -4,10 +4,9 @@ pragma solidity ^0.8.24;
 import {FHE, InEuint128, euint128} from "@fhenixprotocol/cofhe-contracts/FHE.sol";
 
 contract EncryptedStorage {
-
     euint128 private counter;
 
-    function getCounter() public view returns(euint128){
+    function getCounter() public view returns (euint128) {
         return counter;
     }
 
